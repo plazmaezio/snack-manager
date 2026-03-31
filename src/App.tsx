@@ -2,6 +2,7 @@ import "./App.css";
 import Home from "./pages/Home";
 import { useTheme } from "./contexts/ThemeContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   const { theme, toggleTheme } = useTheme();
@@ -23,6 +24,8 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
