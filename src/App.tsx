@@ -1,32 +1,23 @@
 import "./App.css";
 import Home from "./pages/Home";
-import { useTheme } from "./contexts/ThemeContext";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
+import NavBar from "./components/NavBar";
 
 const App = () => {
-  const { theme, toggleTheme } = useTheme();
-
   return (
     <Router>
-      {/* Navigation */}
-      <header className="flex justify-between items-center mb-10">
-        <h1>
-          Theme: <span className="text-brand uppercase">{theme}</span>
-        </h1>
-        <button
-          onClick={toggleTheme}
-          className="px-4 py-2 bg-brand text-white rounded-md cursor-pointer"
-        >
-          Toggle Mode
-        </button>
-      </header>
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <NavBar />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
     </Router>
   );
 };
