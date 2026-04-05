@@ -1,41 +1,52 @@
 import { useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 import { Link, useNavigate } from "react-router-dom";
+import type { DishResponse, UserResponse } from "../types";
 
-interface User {
-  id: number;
-  username: string;
-  email: string;
-}
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
-export default function NavBar() {
+const NavBar = () => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserResponse | null>({
+    id: "123",
+    username: "john_doe",
+    type: "CLIENT",
+    balance: 25.0,
+  } as UserResponse);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Mock data
-  const mockUsers: User[] = [
-    { id: 1, username: "JohnDoe", email: "john@example.com" },
-    { id: 2, username: "JaneSmith", email: "jane@example.com" },
-  ];
+  interface CartItem {
+    dish: DishResponse;
+    quantity: number;
+  }
 
+  // Mock data
   const [cartItems, setCartItems] = useState<CartItem[]>([
-    { id: 1, name: "Chips", price: 2.5, quantity: 2 },
-    { id: 2, name: "Cookie", price: 1.5, quantity: 1 },
+    {
+      dish: {
+        id: "1",
+        name: "Chips",
+        ingredientNames: ["Potatoes", "Salt"],
+        price: 2.5,
+        imageUrl: "https://via.placeholder.com/150",
+      },
+      quantity: 2,
+    },
+    {
+      dish: {
+        id: "2",
+        name: "Cookie",
+        ingredientNames: ["Flour", "Sugar"],
+        price: 1.5,
+        imageUrl: "https://via.placeholder.com/150",
+      },
+      quantity: 1,
+    },
   ]);
 
   const cartTotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.dish.price * item.quantity,
     0,
   );
 
@@ -82,56 +93,60 @@ export default function NavBar() {
             </div>
 
             {/* Cart */}
-            <div className="relative group">
-              <button className="flex items-center gap-2 px-3 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors">
-                <span>🛒</span>
-                <span className="text-sm font-medium">
-                  ${cartTotal.toFixed(2)}
-                </span>
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-brand text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartItems.length}
+            {isLoggedIn && (
+              <div className="relative group">
+                <button className="flex items-center gap-2 px-3 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors">
+                  <span>🛒</span>
+                  <span className="text-sm font-medium">
+                    ${cartTotal.toFixed(2)}
                   </span>
-                )}
-              </button>
-              {/* Cart Dropdown */}
-              <div className="absolute right-0 mt-2 w-64 bg-main-bg border border-ui-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <div className="p-4">
-                  {cartItems.length > 0 ? (
-                    <>
-                      {cartItems.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex justify-between items-center mb-2 pb-2 border-b border-ui-border last:border-b-0"
-                        >
-                          <div>
-                            <p className="font-medium text-sm">{item.name}</p>
-                            <p className="text-xs text-gray-500">
-                              Qty: {item.quantity}
+                  {cartItems.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-brand text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartItems.length}
+                    </span>
+                  )}
+                </button>
+                {/* Cart Dropdown */}
+                <div className="absolute right-0 mt-2 w-64 bg-main-bg border border-ui-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                  <div className="p-4">
+                    {cartItems.length > 0 ? (
+                      <>
+                        {cartItems.map((item) => (
+                          <div
+                            key={item.dish.id}
+                            className="flex justify-between items-center mb-2 pb-2 border-b border-ui-border last:border-b-0"
+                          >
+                            <div>
+                              <p className="font-medium text-sm">
+                                {item.dish.name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Qty: {item.quantity}
+                              </p>
+                            </div>
+                            <p className="font-semibold">
+                              ${(item.dish.price * item.quantity).toFixed(2)}
                             </p>
                           </div>
-                          <p className="font-semibold">
-                            ${(item.price * item.quantity).toFixed(2)}
+                        ))}
+                        <div className="mt-3 pt-3 border-t border-ui-border">
+                          <p className="flex justify-between font-bold">
+                            <span>Total:</span>
+                            <span className="text-brand">
+                              ${cartTotal.toFixed(2)}
+                            </span>
                           </p>
                         </div>
-                      ))}
-                      <div className="mt-3 pt-3 border-t border-ui-border">
-                        <p className="flex justify-between font-bold">
-                          <span>Total:</span>
-                          <span className="text-brand">
-                            ${cartTotal.toFixed(2)}
-                          </span>
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <p className="text-center text-gray-500 text-sm">
-                      Cart is empty
-                    </p>
-                  )}
+                      </>
+                    ) : (
+                      <p className="text-center text-gray-500 text-sm">
+                        Cart is empty
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Theme Toggle */}
             <button
@@ -191,7 +206,19 @@ export default function NavBar() {
                         {currentUser?.username}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {currentUser?.email}
+                        {currentUser?.type === "ADMIN"
+                          ? "Admin"
+                          : currentUser?.type === "EMPLOYEE"
+                            ? "Employee"
+                            : "Client"}{" "}
+                        {currentUser?.balance !== undefined &&
+                          `| Balance: $${
+                            currentUser.balance % 1 === 0
+                              ? currentUser.balance.toFixed(1)
+                              : Number(currentUser.balance.toString()).toFixed(
+                                  2,
+                                )
+                          }`}
                       </p>
                     </div>
                     <button className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors">
@@ -268,14 +295,16 @@ export default function NavBar() {
             </a>
 
             {/* Cart Mobile */}
-            <button className="w-full text-left px-4 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors">
-              <span>🛒 Cart - ${cartTotal.toFixed(2)}</span>
-              {cartItems.length > 0 && (
-                <span className="ml-2 bg-brand text-white text-xs font-bold rounded-full px-2 py-1">
-                  {cartItems.length}
-                </span>
-              )}
-            </button>
+            {isLoggedIn && (
+              <button className="w-full text-left px-4 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors">
+                <span>🛒 Cart - ${cartTotal.toFixed(2)}</span>
+                {cartItems.length > 0 && (
+                  <span className="ml-2 bg-brand text-white text-xs font-bold rounded-full px-2 py-1">
+                    {cartItems.length}
+                  </span>
+                )}
+              </button>
+            )}
 
             {/* Auth Buttons Mobile */}
             {!isLoggedIn ? (
@@ -326,4 +355,6 @@ export default function NavBar() {
       )}
     </nav>
   );
-}
+};
+
+export default NavBar;
