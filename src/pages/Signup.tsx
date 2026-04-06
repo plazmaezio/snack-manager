@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { type UserType } from "../types/user.types";
 
 const Signup = () => {
-  const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<UserType>("CLIENT");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("jwt")) {
+      navigate("/");
+      return;
+    }
+    document.title = "Create Account - Snack Manager";
+  }, []);
 
   const userTypeOptions: { value: UserType; label: string }[] = [
     { value: "CLIENT", label: "Client" },
@@ -18,10 +26,16 @@ const Signup = () => {
     // Values respect requirements from PROJECT REQUIREMENTS
     // Handle form submission logic here, such as sending data to the server
   }
+
   return (
     <div className="flex items-center justify-center py-20">
-      <form className="w-full max-w-md mx-4 md:p-6 p-4 text-left text-sm rounded-xl shadow-[0px_0px_10px_0px] shadow-black/10 dark:shadow-black/30" onSubmit={handleSubmit}>
-        <h2 className="text-2xl font-semibold mb-6 text-center">Create Account</h2>
+      <form
+        className="w-full max-w-md mx-4 md:p-6 p-4 text-left text-sm rounded-xl shadow-[0px_0px_10px_0px] shadow-black/10 dark:shadow-black/30"
+        onSubmit={handleSubmit}
+      >
+        <h2 className="text-2xl font-semibold mb-6 text-center">
+          Create Account
+        </h2>
 
         <label htmlFor="username" className="block mb-1 font-medium">
           Username
@@ -34,10 +48,7 @@ const Signup = () => {
           required
         />
 
-
-        <label className="block mb-2 font-medium">
-          User Type
-        </label>
+        <label className="block mb-2 font-medium">User Type</label>
         <div className="flex gap-2 mb-4">
           {userTypeOptions.map((option) => (
             <button
@@ -62,7 +73,6 @@ const Signup = () => {
             </button>
           ))}
         </div>
-
 
         <label htmlFor="password" className="block mb-1 font-medium">
           Password
