@@ -14,7 +14,16 @@ const loginService = async (
 
     return await getCurrentUser();
   } catch (err) {
-    throw new Error(err instanceof Error ? err.message : "Invalid credentials");
+    if (
+      err instanceof Error &&
+      (err as any).status >= 400 &&
+      (err as any).status < 500
+    ) {
+      throw new Error("Invalid credentials");
+    }
+    throw new Error(
+      err instanceof Error ? err.message : "Something went wrong",
+    );
   }
 };
 

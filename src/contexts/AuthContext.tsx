@@ -45,7 +45,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const userData: UserResponse = await loginService(username, password);
       setUser(userData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Invalid credentials");
+      throw err;
     } finally {
       setIsLoading(false);
     }
