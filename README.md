@@ -1,73 +1,30 @@
-# React + TypeScript + Vite
+# Snack Manager
+![Status](https://img.shields.io/badge/status-in%20development-orange)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web app built to manage the day-to-day operations of a snack bar - 
+from ingredients and dishes to menus and purchases.
 
-Currently, two official plugins are available:
+The app has three roles (Admin, Employee, and Client), each with their 
+own set of permissions. Admins have full control, employees can manage 
+the catalogue, and clients can view everything and track their own purchases.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
+- React
+- TypeScript
+- Tailwind
 
-## React Compiler
+## Features
+- **Authentication** - login flow with custom hook, context, and service layer
+- **API abstraction layer** - centralised `api.ts` with typed **get/post/put/delete** methods
+- **Typed API contracts** - TypeScript interfaces defined for all API requests and responses
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+  
+## Running locally
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Clone the repo and navigate to the project folder
+2. Copy the environment file:
+   - Mac/Linux: `cp .env.example .env`
+   - Windows: `copy .env.example .env`
+3. Fill in your values in `.env`
+4. Install dependencies: `npm install`
+5. Start the dev server: `npm run dev`
