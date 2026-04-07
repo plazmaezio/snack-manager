@@ -1,24 +1,20 @@
-import type { UserResponse } from "../types";
+import type { LoginResponse, UserResponse } from "../types";
+import { api } from "./api";
 
 const loginService = async (
   username: string,
   password: string,
 ): Promise<UserResponse> => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
+  try {
+    const { token } = await api.post<LoginResponse>("/auth/login", {
+      username,
+      password,
+    });
+    localStorage.setItem("jwt", token);
 
-  if (response.ok) {
-    const dataWithJWT = await response.json();
-    localStorage.setItem("jwt", dataWithJWT.token);
-
-    const userResponse: UserResponse = await getCurrentUser();
-    return userResponse;
-  } else {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Invalid credentials");
+    return await getCurrentUser();
+  } catch (err) {
+    throw new Error(err instanceof Error ? err.message : "Invalid credentials");
   }
 };
 
@@ -30,15 +26,10 @@ const getCurrentUser = async (): Promise<UserResponse> => {
   const token = localStorage.getItem("jwt");
   if (!token) throw new Error("No token found");
 
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-    return data as UserResponse;
-  } else {
+  try {
+    return await api.get<UserResponse>("/users/me");
+  } catch (err) {
+    logoutService();
     throw new Error("Failed to fetch user information");
   }
 };
