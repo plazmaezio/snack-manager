@@ -12,10 +12,11 @@ const Login = () => {
     try {
       e.preventDefault(); // prevent reloading
       await login(username, password);
-      navigate("/");
     } catch (error) {
       console.error("Login failed:", error);
+      return;
     }
+    navigate("/");
   };
 
   useEffect(() => {

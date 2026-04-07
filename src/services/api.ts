@@ -17,7 +17,9 @@ const getAuthHeader = () => {
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Something went wrong");
+    const error = new Error(errorData.message || "Something went wrong");
+    (error as any).status = response.status;
+    throw error;
   }
   return response.json();
 };
