@@ -13,3 +13,10 @@ export interface UserRequest {
   type: UserType;
   balance?: number;
 }
+
+export interface LoginResponse {
+  token: string;
+  username: string;
+  role: UserType;
+  message: string;
+}

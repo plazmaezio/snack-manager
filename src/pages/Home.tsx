@@ -1,6 +1,10 @@
+import { useEffect } from "react";
 import SnackItem from "../components/SnackItem";
 
 const Home = () => {
+  useEffect(() => {
+    document.title = "Snack Manager";
+  }, []);
   return (
     <div className="p-10 max-w-6xl mx-auto">
       <main className="mb-10">

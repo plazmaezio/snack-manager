@@ -1,20 +1,15 @@
 import { useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 import { Link, useNavigate } from "react-router-dom";
-import type { DishResponse, UserResponse } from "../types";
+import type { DishResponse } from "../types";
+import { useAuth } from "../contexts/AuthContext";
 
 const NavBar = () => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState<UserResponse | null>({
-    id: "123",
-    username: "john_doe",
-    type: "CLIENT",
-    balance: 25.0,
-  } as UserResponse);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   interface CartItem {
     dish: DishResponse;
@@ -55,10 +50,9 @@ const NavBar = () => {
   };
 
   const handleLogout = () => {
-    console.log("Logout function called - will be handled by auth hook");
-    setCurrentUser(null);
-    setIsLoggedIn(false);
     setIsDropdownOpen(false);
+    logout();
+    navigate("/");
   };
 
   const handleSignup = () => {
@@ -93,7 +87,7 @@ const NavBar = () => {
             </div>
 
             {/* Cart */}
-            {isLoggedIn && (
+            {user && (
               <div className="relative group">
                 <button className="flex items-center gap-2 px-3 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors">
                   <span>🛒</span>
@@ -158,7 +152,7 @@ const NavBar = () => {
             </button>
 
             {/* Auth Section */}
-            {!isLoggedIn ? (
+            {!user ? (
               <div className="flex gap-2">
                 <button
                   onClick={handleLogin}
@@ -180,9 +174,9 @@ const NavBar = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors font-medium"
                 >
                   <span className="w-8 h-8 bg-brand text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    {currentUser?.username.charAt(0).toUpperCase()}
+                    {user?.username.charAt(0).toUpperCase()}
                   </span>
-                  <span>{currentUser?.username}</span>
+                  <span>{user?.username}</span>
                   <svg
                     className={`w-4 h-4 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
                     fill="none"
@@ -203,21 +197,19 @@ const NavBar = () => {
                   <div className="absolute right-0 mt-2 w-48 bg-main-bg border border-ui-border rounded-md shadow-lg">
                     <div className="p-4 border-b border-ui-border">
                       <p className="text-sm font-semibold text-heading">
-                        {currentUser?.username}
+                        {user?.username}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {currentUser?.type === "ADMIN"
+                        {user?.type === "ADMIN"
                           ? "Admin"
-                          : currentUser?.type === "EMPLOYEE"
+                          : user?.type === "EMPLOYEE"
                             ? "Employee"
                             : "Client"}{" "}
-                        {currentUser?.balance !== undefined &&
+                        {user?.balance !== undefined &&
                           `| Balance: $${
-                            currentUser.balance % 1 === 0
-                              ? currentUser.balance.toFixed(1)
-                              : Number(currentUser.balance.toString()).toFixed(
-                                  2,
-                                )
+                            user.balance % 1 === 0
+                              ? user.balance.toFixed(1)
+                              : Number(user.balance.toString()).toFixed(2)
                           }`}
                       </p>
                     </div>
@@ -295,7 +287,7 @@ const NavBar = () => {
             </a>
 
             {/* Cart Mobile */}
-            {isLoggedIn && (
+            {user && (
               <button className="w-full text-left px-4 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors">
                 <span>🛒 Cart - ${cartTotal.toFixed(2)}</span>
                 {cartItems.length > 0 && (
@@ -307,7 +299,7 @@ const NavBar = () => {
             )}
 
             {/* Auth Buttons Mobile */}
-            {!isLoggedIn ? (
+            {!user ? (
               <div className="space-y-2">
                 <button
                   onClick={() => {
@@ -331,7 +323,7 @@ const NavBar = () => {
             ) : (
               <div className="space-y-2">
                 <p className="px-4 py-2 font-semibold text-heading">
-                  Hello, {currentUser?.username}!
+                  Hello, {user?.username}!
                 </p>
                 <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors">
                   📝 Edit Profile
