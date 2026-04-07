@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 if (!BASE_URL) {
   throw new Error(
@@ -6,10 +6,13 @@ if (!BASE_URL) {
   );
 }
 
-const getAuthHeader = () => ({
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-});
+const getAuthHeader = () => {
+  const token = localStorage.getItem("jwt");
+  return {
+    "Content-Type": "application/json",
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+};
 
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
