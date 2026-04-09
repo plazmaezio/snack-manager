@@ -1,4 +1,4 @@
-import type { LoginResponse, UserResponse } from "../types";
+import type { LoginResponse, UserRequest, UserResponse } from "../types";
 import { api } from "./api";
 
 const loginService = async (
@@ -27,6 +27,22 @@ const loginService = async (
   }
 };
 
+const signupService = async (userData: UserRequest): Promise<UserResponse> => {
+  try {
+    const { username } = await api.post<UserResponse>("/users", userData);
+
+    return await loginService(username, userData.password);
+  } catch (err) {
+    if (
+      err instanceof Error &&
+      (err as any).status === 409
+    ) {
+      throw new Error("Username already taken");
+    }
+    throw new Error("Failed to create user");
+  }
+};
+
 const logoutService = () => {
   localStorage.removeItem("jwt");
 };
@@ -43,4 +59,4 @@ const getCurrentUser = async (): Promise<UserResponse> => {
   }
 };
 
-export { loginService, logoutService, getCurrentUser };
+export { loginService, logoutService, getCurrentUser, signupService };

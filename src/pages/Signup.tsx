@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { type UserType } from "../types/user.types";
+import { useAuth } from "../contexts/AuthContext";
 
 const Signup = () => {
   const [selectedType, setSelectedType] = useState<UserType>("CLIENT");
   const navigate = useNavigate();
+  const [inputError, setInputError] = useState<string[] | null>(null);
+  const { signup } = useAuth();
 
   useEffect(() => {
     if (localStorage.getItem("jwt")) {
@@ -20,12 +23,69 @@ const Signup = () => {
     { value: "ADMIN", label: "Admin" },
   ];
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     event.preventDefault();
-    // Check if passwords match
-    // Values respect requirements from PROJECT REQUIREMENTS
-    // Handle form submission logic here, such as sending data to the server
-  }
+    const errors: string[] = [];
+    const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/;
+
+    const formData = new FormData(event.currentTarget);
+    const username: string = formData.get("username") as string;
+    const password: string = formData.get("password") as string;
+    const confirmPassword: string = formData.get("confirmPassword") as string;
+
+    // Client-side validation
+    if (!username || !password || !confirmPassword) {
+      console.log(username, password, confirmPassword);
+      errors.push("All fields are required");
+      return setInputError(errors);
+    }
+
+    if (password !== confirmPassword) {
+      errors.push("Passwords do not match");
+      return setInputError(errors);
+    }
+
+    // PASSWORD must have at least 6 characters, one uppercase,
+    // one lowercase, one special character and one number
+    if (password.length < 6)
+      errors.push("Password must be at least 6 characters");
+    if (!/[a-z]/.test(password))
+      errors.push("Password must have at least one lowercase letter");
+    if (!/[A-Z]/.test(password))
+      errors.push("Password must have at least one uppercase letter");
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password))
+      errors.push("Password must have at least one special character");
+    if (!/[0-9]/.test(password))
+      errors.push("Password must have at least one number");
+
+    // USERNAME can only contain letters, numbers, underscores and hyphens
+    if (!USERNAME_REGEX.test(username)) {
+      errors.push(
+        "Username can only contain letters, numbers, underscores, and hyphens",
+      );
+    }
+
+    if (errors.length > 0) {
+      return setInputError(errors);
+    }
+
+    const userData = {
+      username,
+      password,
+      type: selectedType,
+    };
+
+    try {
+      await signup(userData);
+      navigate("/");
+    } catch (err) {
+      setInputError([
+        err instanceof Error ? err.message : "Failed to create account",
+      ]);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center py-20">
@@ -42,6 +102,7 @@ const Signup = () => {
         </label>
         <input
           id="username"
+          name="username"
           className="w-full border mb-4 outline-none rounded-full py-2.5 px-4"
           type="text"
           placeholder="Enter your username"
@@ -79,6 +140,7 @@ const Signup = () => {
         </label>
         <input
           id="password"
+          name="password"
           className="w-full border mb-4 outline-none rounded-full py-2.5 px-4"
           type="password"
           placeholder="Create a password"
@@ -90,11 +152,20 @@ const Signup = () => {
         </label>
         <input
           id="confirmPassword"
+          name="confirmPassword"
           className="w-full border outline-none rounded-full py-2.5 px-4"
           type="password"
           placeholder="Confirm your password"
           required
         />
+
+        {inputError && (
+          <div className="w-full max-w-md mx-4 mt-4 text-left text-sm rounded-xl shadow-[0px_0px_10px_0px] shadow-red-500/50 p-4 bg-red-50 text-red-700">
+            {inputError.map((error, index) => (
+              <p key={index}>{error}</p>
+            ))}
+          </div>
+        )}
 
         <button
           type="submit"
