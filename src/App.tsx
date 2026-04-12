@@ -5,6 +5,7 @@ import CreateAccount from "./pages/CreateAccount";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import NavBar from "./components/NavBar";
+import AdminRoute from "./components/AdminRoute";
 
 const App = () => {
   return (
@@ -14,7 +15,14 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/create-account" element={<CreateAccount />} />
+          <Route
+            path="/create-account"
+            element={
+              <AdminRoute>
+                <CreateAccount />
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

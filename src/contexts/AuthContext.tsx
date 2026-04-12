@@ -58,8 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const newUser = await createAccountService(userData);
-      setUser(newUser);
+      await createAccountService(userData);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create account");
       throw err;

@@ -30,12 +30,18 @@ const loginService = async (
 const createAccountService = async (
   userData: UserRequest,
 ): Promise<UserResponse> => {
-  try {
-    const { username } = await api.post<UserResponse>("/users", userData);
+  if (!userData.username || !userData.password || !userData.type) {
+    throw new Error("All fields are required");
+  }
 
-    return await loginService(username, userData.password);
+  if (userData.balance === undefined || userData.balance < 0) {
+    userData.balance = 0;
+  }
+
+  try {
+    return await api.post<UserResponse>("/users", userData);
   } catch (err) {
-    if (err instanceof Error && (err as any).status === 409) {
+    if (err instanceof Error && (err as any).status === 400) {
       throw new Error("Username already taken");
     }
     throw new Error("Failed to create user");
