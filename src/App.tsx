@@ -1,7 +1,7 @@
 import "./App.css";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import CreateAccount from "./pages/CreateAccount";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import NavBar from "./components/NavBar";
@@ -14,7 +14,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/create-account" element={<CreateAccount />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

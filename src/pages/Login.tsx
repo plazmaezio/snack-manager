@@ -74,7 +74,7 @@ const Login = () => {
         <p className="text-center mt-4">
           Don't have an account?{" "}
           <button
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/create-account")}
             className="text-brand underline hover:opacity-80"
           >
             Create It Now

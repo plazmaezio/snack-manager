@@ -10,13 +10,13 @@ import {
   getCurrentUser,
   loginService,
   logoutService,
-  signupService,
+  createAccountService,
 } from "../services/authService";
 
 interface AuthContextType {
   user: UserResponse | null;
   login: (username: string, password: string) => Promise<void>;
-  signup: (userData: UserRequest) => Promise<void>;
+  createAccount: (userData: UserRequest) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   error: string | null;
@@ -54,11 +54,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signup = async (userData: UserRequest) => {
+  const createAccount = async (userData: UserRequest) => {
     setIsLoading(true);
     setError(null);
     try {
-      const newUser = await signupService(userData);
+      const newUser = await createAccountService(userData);
       setUser(newUser);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create account");
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         login,
-        signup,
+        createAccount,
         logout,
         isLoading,
         error,

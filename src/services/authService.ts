@@ -27,16 +27,15 @@ const loginService = async (
   }
 };
 
-const signupService = async (userData: UserRequest): Promise<UserResponse> => {
+const createAccountService = async (
+  userData: UserRequest,
+): Promise<UserResponse> => {
   try {
     const { username } = await api.post<UserResponse>("/users", userData);
 
     return await loginService(username, userData.password);
   } catch (err) {
-    if (
-      err instanceof Error &&
-      (err as any).status === 409
-    ) {
+    if (err instanceof Error && (err as any).status === 409) {
       throw new Error("Username already taken");
     }
     throw new Error("Failed to create user");
@@ -59,4 +58,4 @@ const getCurrentUser = async (): Promise<UserResponse> => {
   }
 };
 
-export { loginService, logoutService, getCurrentUser, signupService };
+export { loginService, logoutService, getCurrentUser, createAccountService };

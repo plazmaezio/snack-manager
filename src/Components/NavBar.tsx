@@ -59,8 +59,8 @@ const NavBar = () => {
     navigate("/");
   };
 
-  const handleSignup = () => {
-    navigate("/signup");
+  const handleAccountCreation = () => {
+    navigate("/create-account");
   };
 
   return (
@@ -84,7 +84,10 @@ const NavBar = () => {
 
             {/* Auth Section */}
             {!user ? (
-              <AuthButtons onLogin={handleLogin} onSignup={handleSignup} />
+              <AuthButtons
+                onLogin={handleLogin}
+                onSignup={handleAccountCreation}
+              />
             ) : (
               <UserDropdown user={user} onLogout={handleLogout} />
             )}
@@ -126,7 +129,7 @@ const NavBar = () => {
         cartTotal={cartTotal}
         onClose={() => setIsMobileMenuOpen(false)}
         onLogin={handleLogin}
-        onSignup={handleSignup}
+        onSignup={handleAccountCreation}
         onLogout={handleLogout}
       />
     </nav>

@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { type UserType } from "../types/user.types";
 import { useAuth } from "../contexts/AuthContext";
 
-const Signup = () => {
+const CreateAccount = () => {
   const [selectedType, setSelectedType] = useState<UserType>("CLIENT");
   const navigate = useNavigate();
   const [inputError, setInputError] = useState<string[] | null>(null);
-  const { signup } = useAuth();
+  const { createAccount } = useAuth();
 
   useEffect(() => {
     if (localStorage.getItem("jwt")) {
@@ -78,7 +78,7 @@ const Signup = () => {
     };
 
     try {
-      await signup(userData);
+      await createAccount(userData);
       navigate("/");
     } catch (err) {
       setInputError([
@@ -188,4 +188,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default CreateAccount;
