@@ -4,6 +4,7 @@
   --color-brand: var(--accent);
   --color-brand-bg: var(--accent-bg);
   --color-brand-border: var(--accent-border);
+  --color-nav-bg: var(--nav-bg);
   --color-main-bg: var(--bg);
   --color-main-text: var(--text);
   --color-heading: var(--text-h);
@@ -58,6 +59,7 @@ form input::placeholder {
   --accent: #aa3bff;
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
+  --nav-bg: #f5eeff; /* light purple tint, fully opaque */
 
   --sans: system-ui, sans-serif;
   --mono: ui-monospace, monospace;
@@ -68,7 +70,6 @@ form input::placeholder {
 }
 
 /* --- DARK THEME --- */
-/* This will trigger when you add the 'dark' class to your <html> tag */
 .dark {
   --text: #9ca3af;
   --text-h: #f3f4f6;
@@ -77,6 +78,7 @@ form input::placeholder {
   --accent: #c084fc;
   --accent-bg: rgba(192, 132, 252, 0.15);
   --accent-border: rgba(192, 132, 252, 0.5);
+  --nav-bg: #1e1a2e; /* dark purple tint, fully opaque */
 
   --form-bg: #1f2937;
   --input-bg: #374151;
