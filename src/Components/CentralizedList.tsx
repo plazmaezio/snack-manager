@@ -26,17 +26,13 @@ const CentralizedList = <T extends ClassTypes>({
   onDelete,
 }: CentralizedListProps<T>) => {
 
-  // --- Search ---
   const [searchQuery, setSearchQuery] = useState('');
 
-  // --- Sort ---
   const [sortField, setSortField] = useState<keyof T | undefined>(defaultSortField);
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  // --- Selection (for bulk delete) ---
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  // --- Modals ---
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<T | null>(null);
 
@@ -51,13 +47,9 @@ const CentralizedList = <T extends ClassTypes>({
     return Array.from(fieldNames).filter((field) => field !== 'id');
   }, [data]);
 
-  // ------------------------------------------------
-  // Derived: filter → sort
-  // ------------------------------------------------
   const processedData = useMemo(() => {
     let result = [...data];
 
-    // 1. Filter by search query across all searchFields
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter((item) =>
@@ -68,7 +60,6 @@ const CentralizedList = <T extends ClassTypes>({
       );
     }
 
-    // 2. Sort
     if (sortField) {
       result.sort((a, b) => {
         const aVal = a[sortField];
@@ -84,12 +75,8 @@ const CentralizedList = <T extends ClassTypes>({
     return result;
   }, [data, searchQuery, searchFields, sortField, sortDirection]);
 
-  // ------------------------------------------------
-  // Handlers: sort
-  // ------------------------------------------------
   const handleSortFieldChange = (field: keyof T) => {
     if (field === sortField) {
-      // Same field — toggle direction
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
     } else {
       setSortField(field);
@@ -97,9 +84,6 @@ const CentralizedList = <T extends ClassTypes>({
     }
   };
 
-  // ------------------------------------------------
-  // Handlers: selection / bulk delete
-  // ------------------------------------------------
   const isAllSelected =
     processedData.length > 0 &&
     processedData.every((item) => selectedIds.has(getItemId(item)));
@@ -122,22 +106,23 @@ const CentralizedList = <T extends ClassTypes>({
 
   const handleDelete = () => {
     if (selectedIds.size === 0) return;
+
+    const isConfirmed = window.confirm(
+      `Are you sure you want to delete ${selectedIds.size} item${selectedIds.size > 1 ? 's' : ''}?`,
+    );
+
+    if (!isConfirmed) return;
+
     onDelete(Array.from(selectedIds));
     setSelectedIds(new Set());
   };
 
-  // ------------------------------------------------
-  // Handlers: modals
-  // ------------------------------------------------
   const handleOpenCreate = () => setIsCreateModalOpen(true);
   const handleCloseCreate = () => setIsCreateModalOpen(false);
 
   const handleOpenEdit = (item: T) => setEditingItem(item);
   const handleCloseEdit = () => setEditingItem(null);
 
-  // ------------------------------------------------
-  // Render
-  // ------------------------------------------------
   return (
     <>
       <div className="rounded-3xl border border-ui-border bg-main-bg/90 p-4 md:p-6 shadow-[0px_0px_10px_0px] shadow-black/10 dark:shadow-black/30 backdrop-blur-sm">
