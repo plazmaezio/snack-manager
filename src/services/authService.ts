@@ -1,4 +1,4 @@
-import type { LoginResponse, UserResponse } from "../types";
+import type { LoginResponse, UserRequest, UserResponse } from "../types";
 import { api } from "./api";
 
 const loginService = async (
@@ -27,6 +27,27 @@ const loginService = async (
   }
 };
 
+const createAccountService = async (
+  userData: UserRequest,
+): Promise<UserResponse> => {
+  if (!userData.username || !userData.password || !userData.type) {
+    throw new Error("All fields are required");
+  }
+
+  if (userData.balance === undefined || userData.balance < 0) {
+    userData.balance = 0;
+  }
+
+  try {
+    return await api.post<UserResponse>("/users", userData);
+  } catch (err) {
+    if (err instanceof Error && (err as any).status === 400) {
+      throw new Error("Username already taken");
+    }
+    throw new Error("Failed to create user");
+  }
+};
+
 const logoutService = () => {
   localStorage.removeItem("jwt");
 };
@@ -43,4 +64,4 @@ const getCurrentUser = async (): Promise<UserResponse> => {
   }
 };
 
-export { loginService, logoutService, getCurrentUser };
+export { loginService, logoutService, getCurrentUser, createAccountService };

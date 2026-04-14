@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { UserResponse } from "../types";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface UserDropdownProps {
   user: UserResponse;
@@ -8,6 +9,8 @@ interface UserDropdownProps {
 
 const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const userType =
     user?.type === "ADMIN"
@@ -15,6 +18,10 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
       : user?.type === "EMPLOYEE"
         ? "Employee"
         : "Client";
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
 
   return (
     <div className="relative">
@@ -58,15 +65,32 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
                 }`}
             </p>
           </div>
-          <button className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors">
+          <button
+            onClick={() => {
+              navigate("/create-account");
+            }}
+            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors"
+          >
+            Create Account
+          </button>
+          <button
+            onClick={() => {
+              navigate("/edit-profile");
+            }}
+            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors"
+          >
             📝 Edit Profile
           </button>
-          <button className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors">
+          <button
+            onClick={() => {
+              navigate("/my-purchases");
+            }}
+            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors"
+          >
             🛍️ Purchases
           </button>
           <button
             onClick={() => {
-              setIsOpen(false);
               onLogout();
             }}
             className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors text-brand font-medium"

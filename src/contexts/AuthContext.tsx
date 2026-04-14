@@ -5,16 +5,18 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { UserResponse } from "../types";
+import type { UserRequest, UserResponse } from "../types";
 import {
   getCurrentUser,
   loginService,
   logoutService,
+  createAccountService,
 } from "../services/authService";
 
 interface AuthContextType {
   user: UserResponse | null;
   login: (username: string, password: string) => Promise<void>;
+  createAccount: (userData: UserRequest) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   error: string | null;
@@ -52,13 +54,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const createAccount = async (userData: UserRequest) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await createAccountService(userData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not create account");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     logoutService();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading, error }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        createAccount,
+        logout,
+        isLoading,
+        error,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

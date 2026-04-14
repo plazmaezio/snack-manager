@@ -14,7 +14,6 @@ interface MobileMenuProps {
   cartTotal: number;
   onClose: () => void;
   onLogin: () => void;
-  onSignup: () => void;
   onLogout: () => void;
 }
 
@@ -25,7 +24,6 @@ const MobileMenu = ({
   cartTotal,
   onClose,
   onLogin,
-  onSignup,
   onLogout,
 }: MobileMenuProps) => {
   if (!isOpen) return null;
@@ -59,15 +57,6 @@ const MobileMenu = ({
               className="w-full px-4 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors font-medium"
             >
               Login
-            </button>
-            <button
-              onClick={() => {
-                onSignup();
-                onClose();
-              }}
-              className="w-full px-4 py-2 bg-brand text-white rounded-md hover:opacity-90 transition-opacity font-medium"
-            >
-              Sign Up
             </button>
           </div>
         ) : (

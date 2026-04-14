@@ -59,10 +59,6 @@ const NavBar = () => {
     navigate("/");
   };
 
-  const handleSignup = () => {
-    navigate("/signup");
-  };
-
   return (
     <nav className="bg-nav-bg border-b border-brand-border sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -84,7 +80,7 @@ const NavBar = () => {
 
             {/* Auth Section */}
             {!user ? (
-              <AuthButtons onLogin={handleLogin} onSignup={handleSignup} />
+              <AuthButtons onLogin={handleLogin} />
             ) : (
               <UserDropdown user={user} onLogout={handleLogout} />
             )}
@@ -94,7 +90,6 @@ const NavBar = () => {
           <div className="md:hidden flex items-center gap-2">
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
-            {/* Hamburger Menu */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors"
@@ -126,7 +121,6 @@ const NavBar = () => {
         cartTotal={cartTotal}
         onClose={() => setIsMobileMenuOpen(false)}
         onLogin={handleLogin}
-        onSignup={handleSignup}
         onLogout={handleLogout}
       />
     </nav>

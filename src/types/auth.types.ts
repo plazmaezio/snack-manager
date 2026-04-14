@@ -1,8 +1,10 @@
+import type { UserType } from "./user.types";
+
 export interface LoginResponse {
   token: string;
   username: string;
-  role: string; // this might be UserType
-  message?: string;
+  role: UserType;
+  message: string;
 }
 
 export interface LoginRequest {
