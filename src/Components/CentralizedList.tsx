@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import type { DishResponse, UserResponse, IngredientResponse } from '../types';
+import React, { useState, useMemo } from "react";
+import type { DishResponse, UserResponse, IngredientResponse } from "../types";
 
 type ClassTypes = DishResponse | UserResponse | IngredientResponse;
 
@@ -14,7 +14,7 @@ interface CentralizedListProps<T extends ClassTypes> {
   onDelete: (ids: string[]) => void;
 }
 
-type SortDirection = 'asc' | 'desc';
+type SortDirection = "asc" | "desc";
 
 const CentralizedList = <T extends ClassTypes>({
   data,
@@ -25,18 +25,17 @@ const CentralizedList = <T extends ClassTypes>({
   renderEditModal,
   onDelete,
 }: CentralizedListProps<T>) => {
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const [sortField, setSortField] = useState<keyof T | undefined>(defaultSortField);
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortField, setSortField] = useState<keyof T | undefined>(
+    defaultSortField,
+  );
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<T | null>(null);
 
   const getItemId = (item: T) => String((item as { id: string | number }).id);
+
   const tableFields = useMemo(() => {
     const fieldNames = new Set<string>();
 
@@ -44,7 +43,7 @@ const CentralizedList = <T extends ClassTypes>({
       Object.keys(item).forEach((field) => fieldNames.add(field));
     });
 
-    return Array.from(fieldNames).filter((field) => field !== 'id');
+    return Array.from(fieldNames).filter((field) => field !== "id");
   }, [data]);
 
   const processedData = useMemo(() => {
@@ -55,8 +54,10 @@ const CentralizedList = <T extends ClassTypes>({
       result = result.filter((item) =>
         searchFields.some((field) => {
           const value = item[field];
-          return String(value ?? '').toLowerCase().includes(q);
-        })
+          return String(value ?? "")
+            .toLowerCase()
+            .includes(q);
+        }),
       );
     }
 
@@ -68,7 +69,7 @@ const CentralizedList = <T extends ClassTypes>({
         if (aVal === bVal) return 0;
 
         const comparison = aVal < bVal ? -1 : 1;
-        return sortDirection === 'asc' ? comparison : -comparison;
+        return sortDirection === "asc" ? comparison : -comparison;
       });
     }
 
@@ -77,10 +78,10 @@ const CentralizedList = <T extends ClassTypes>({
 
   const handleSortFieldChange = (field: keyof T) => {
     if (field === sortField) {
-      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -108,7 +109,7 @@ const CentralizedList = <T extends ClassTypes>({
     if (selectedIds.size === 0) return;
 
     const isConfirmed = window.confirm(
-      `Are you sure you want to delete ${selectedIds.size} item${selectedIds.size > 1 ? 's' : ''}?`,
+      `Are you sure you want to delete ${selectedIds.size} item${selectedIds.size > 1 ? "s" : ""}?`,
     );
 
     if (!isConfirmed) return;
@@ -126,10 +127,12 @@ const CentralizedList = <T extends ClassTypes>({
   return (
     <>
       <div className="rounded-3xl border border-ui-border bg-main-bg/90 p-4 md:p-6 shadow-[0px_0px_10px_0px] shadow-black/10 dark:shadow-black/30 backdrop-blur-sm">
-
         {/* Search bar */}
         <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-main-text" htmlFor="centralized-list-search">
+          <label
+            className="mb-2 block text-sm font-medium text-main-text"
+            htmlFor="centralized-list-search"
+          >
             Search
           </label>
           <input
@@ -151,7 +154,11 @@ const CentralizedList = <T extends ClassTypes>({
               className="rounded-full border border-ui-border bg-(--input-bg) px-4 py-2 text-sm font-medium text-main-text transition hover:border-brand hover:text-brand"
             >
               {String(field)}
-              {sortField === field ? (sortDirection === 'asc' ? ' ▲' : ' ▼') : ''}
+              {sortField === field
+                ? sortDirection === "asc"
+                  ? " ▲"
+                  : " ▼"
+                : ""}
             </button>
           ))}
         </div>
@@ -190,7 +197,10 @@ const CentralizedList = <T extends ClassTypes>({
                     />
                   </th>
                   {tableFields.map((field) => (
-                    <th key={field} className="px-4 py-3 font-semibold capitalize">
+                    <th
+                      key={field}
+                      className="px-4 py-3 font-semibold capitalize"
+                    >
                       {field}
                     </th>
                   ))}
@@ -230,8 +240,11 @@ const CentralizedList = <T extends ClassTypes>({
 
                         {tableFields.map((field) => (
                           <td key={field} className="px-4 py-4 align-middle">
-                            <span className="block truncate text-main-text" title={String(item[field as keyof T] ?? '')}>
-                              {String(item[field as keyof T] ?? '')}
+                            <span
+                              className="block truncate text-main-text"
+                              title={String(item[field as keyof T] ?? "")}
+                            >
+                              {String(item[field as keyof T] ?? "")}
                             </span>
                           </td>
                         ))}
