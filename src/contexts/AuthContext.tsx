@@ -26,12 +26,15 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthContextType["user"]>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<AuthContextType["error"]>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
-    if (!token) return;
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     getCurrentUser()
