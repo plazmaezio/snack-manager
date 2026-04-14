@@ -1,4 +1,9 @@
-export type UserType = "EMPLOYEE" | "CLIENT" | "ADMIN";
+export const userTypeOptions = {
+  EMPLOYEE: "Employee",
+  CLIENT: "Client",
+  ADMIN: "Admin"
+} as const;
+export type UserType = keyof typeof userTypeOptions;
 
 export interface UserResponse {
   readonly id: string;
