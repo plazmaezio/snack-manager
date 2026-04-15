@@ -16,17 +16,7 @@ const Home = () => {
         </h2>
 
         {/* Daily Menu Container (all 7 days) */}
-        <WeeklyMenu></WeeklyMenu>
-
-        {/* <div className="grid max-[450px]:grid-cols-1 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <SnackItem name="Pastel de Nata" rating={4.96} />
-          <SnackItem name="Bifana" rating={4.2} />
-          <SnackItem name="Sumol" rating={4.8} />
-          <SnackItem
-            name="Very long snack name that exceeds the container width"
-            rating={3.5}
-          />
-        </div> */}
+        <WeeklyMenu />
       </main>
     </div>
   );
