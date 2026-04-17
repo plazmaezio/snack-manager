@@ -1,12 +1,14 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { login, error, isLoading } = useAuth();
+  const { login, error, isLoading, user } = useAuth();
+  const location = useLocation();
+  const from = location.state?.from ?? "/";
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
@@ -16,16 +18,13 @@ const Login = () => {
       console.error("Login failed:", error);
       return;
     }
-    navigate("/");
+    navigate(from, { replace: true });
   };
 
   useEffect(() => {
-    if (localStorage.getItem("jwt")) {
-      navigate("/");
-      return;
-    }
     document.title = "Login - Snack Manager";
-  }, []);
+    if (user) navigate(from, { replace: true });
+  }, [user]);
 
   return (
     <div className="flex items-center justify-center py-20">

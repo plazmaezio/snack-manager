@@ -98,7 +98,7 @@ const CreateAccount = () => {
         />
       )}
 
-      <div className="flex items-center justify-center py-20">
+      <div className="flex min-h-screen items-center justify-center p-4">
         <form
           onSubmit={handleSubmit}
           className="w-full max-w-md mx-4 md:p-6 p-4 text-left text-sm rounded-xl shadow-[0px_0px_10px_0px] shadow-black/10 dark:shadow-black/30"

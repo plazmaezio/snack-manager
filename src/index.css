@@ -94,3 +94,223 @@ form input:-webkit-autofill:focus {
   border-color: var(--ui-border);
   transition: background-color 5000s ease-in-out 0s;
 }
+
+/* --- SCROLLABLE CAROUSEL --- */
+.carousel-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+/* Mobile: hide arrows */
+@media (max-width: 767px) {
+  .carousel-wrapper {
+    gap: 0;
+  }
+
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    flex: 1;
+  }
+
+  .carousel-arrow {
+    display: none;
+  }
+}
+
+/* Desktop: show arrows on sides */
+@media (min-width: 768px) {
+  .carousel-container {
+    flex: 1;
+    position: relative;
+  }
+
+  .carousel-arrow {
+    position: static;
+    display: flex;
+  }
+}
+
+.carousel-container {
+  flex: 1;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  position: relative;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.carousel-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Gradient fade effect on mobile - indicates more content to the right */
+@media (max-width: 767px) {
+  .carousel-container::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50px;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), var(--main-bg));
+    pointer-events: none;
+    z-index: 5;
+  }
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.25rem 0;
+  min-width: min-content;
+}
+
+.carousel-item {
+  flex: 0 0 auto;
+  min-width: clamp(200px, 90vw, 280px);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  padding: 0.5rem 0;
+}
+
+/* Mobile: peek at next item to show it's scrollable */
+@media (max-width: 767px) {
+  .carousel-item {
+    min-width: clamp(200px, calc(100vw - 50px), 280px);
+  }
+}
+
+/* Carousel Navigation Arrows */
+.carousel-arrow {
+  display: flex;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--accent-bg);
+  border: 2px solid var(--accent-border);
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+
+.carousel-arrow:hover {
+  background-color: var(--accent);
+  color: var(--bg);
+  transform: scale(1.1);
+}
+
+.carousel-arrow:active {
+  transform: scale(0.95);
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.carousel-arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Hide arrows only on very small mobile screens */
+@media (max-width: 480px) {
+  .carousel-arrow {
+    display: none;
+  }
+}
+
+/* Larger arrows on larger desktop */
+@media (min-width: 768px) {
+  .carousel-arrow {
+    width: 44px;
+    height: 44px;
+  }
+
+  .carousel-arrow svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .carousel-item {
+    min-width: 240px;
+  }
+}
+
+/* Smooth touch scrolling on mobile */
+.carousel-container {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --- SCROLL INDICATORS --- */
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Hide indicators on desktop */
+@media (min-width: 768px) {
+  .carousel-indicators {
+    display: none;
+  }
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--border);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.indicator-dot:hover {
+  background-color: var(--ui-border);
+}
+
+.indicator-dot.active {
+  background-color: var(--accent);
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* Optional: Add a subtle gradient fade at carousel edges on desktop */
+@media (min-width: 768px) {
+  .carousel-container::before,
+  .carousel-container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 40px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .carousel-container::before {
+    left: 0;
+    background: linear-gradient(to right, var(--main-bg), rgba(0, 0, 0, 0));
+  }
+
+  .carousel-container::after {
+    right: 0;
+    background: linear-gradient(to left, var(--main-bg), rgba(0, 0, 0, 0));
+  }
+}
