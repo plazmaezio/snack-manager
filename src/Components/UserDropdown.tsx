@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { UserResponse } from "../types";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Plus, Pencil, ShoppingCart, LogOut } from "lucide-react";
 
 interface UserDropdownProps {
   user: UserResponse;
@@ -69,33 +70,37 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
             onClick={() => {
               navigate("/create-account");
             }}
-            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors"
+            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
           >
+            <Plus className="w-4 h-4" />
             Create Account
           </button>
           <button
             onClick={() => {
               navigate("/edit-profile");
             }}
-            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors"
+            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
           >
-            📝 Edit Profile
+            <Pencil className="w-4 h-4" />
+            Edit Profile
           </button>
           <button
             onClick={() => {
               navigate("/my-purchases");
             }}
-            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors"
+            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
           >
-            🛍️ Purchases
+            <ShoppingCart className="w-4 h-4" />
+            Purchases
           </button>
           <button
             onClick={() => {
               onLogout();
             }}
-            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors text-brand font-medium"
+            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors text-brand font-medium flex items-center gap-2"
           >
-            🚪 Logout
+            <LogOut className="w-4 h-4" />
+            Logout
           </button>
         </div>
       )}

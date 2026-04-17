@@ -1,6 +1,7 @@
 import type { UserResponse } from "../types";
 import type { DishResponse } from "../types";
 import MobileNavLinks from "./MobileNavLinks";
+import { Plus, Pencil, ShoppingCart, LogOut } from "lucide-react";
 
 interface CartItem {
   dish: DishResponse;
@@ -36,8 +37,9 @@ const MobileMenu = ({
 
         {/* Cart Mobile */}
         {user && (
-          <button className="w-full text-left px-4 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors">
-            <span>🛒 Cart - ${cartTotal.toFixed(2)}</span>
+          <button className="w-full text-left px-4 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors flex items-center gap-2">
+            <ShoppingCart className="w-4 h-4" />
+            <span>Cart - ${cartTotal.toFixed(2)}</span>
             {cartItems.length > 0 && (
               <span className="ml-2 bg-brand text-white text-xs font-bold rounded-full px-2 py-1">
                 {cartItems.length}
@@ -64,20 +66,23 @@ const MobileMenu = ({
             <p className="px-4 py-2 font-semibold text-heading">
               Hello, {user?.username}!
             </p>
-            <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors">
-              📝 Edit Profile
+            <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2">
+              <Pencil className="w-4 h-4" />
+              Edit Profile
             </button>
-            <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors">
-              🛍️ Purchases
+            <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2">
+              <ShoppingCart className="w-4 h-4" />
+              Purchases
             </button>
             <button
               onClick={() => {
                 onLogout();
                 onClose();
               }}
-              className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors text-brand font-medium"
+              className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors text-brand font-medium flex items-center gap-2"
             >
-              🚪 Logout
+              <LogOut className="w-4 h-4" />
+              Logout
             </button>
           </div>
         )}
