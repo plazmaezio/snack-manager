@@ -65,20 +65,10 @@ const Login = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full mt-10 mb-3 bg-brand hover:opacity-90 active:scale-95 transition py-2.5 rounded-full text-white"
+          className="w-full mt-10 mb-6 bg-brand hover:opacity-90 active:scale-95 transition py-2.5 rounded-full text-white"
         >
           {isLoading ? "Logging in..." : "Log in"}
         </button>
-
-        <p className="text-center mt-4">
-          Don't have an account?{" "}
-          <button
-            onClick={() => navigate("/create-account")}
-            className="text-brand underline hover:opacity-80"
-          >
-            Create It Now
-          </button>
-        </p>
       </form>
     </div>
   );
