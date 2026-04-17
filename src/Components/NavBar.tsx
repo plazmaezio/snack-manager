@@ -5,7 +5,6 @@ import type { DishResponse } from "../types";
 import { useAuth } from "../contexts/AuthContext";
 import CartDropdown from "./CartDropdown";
 import ThemeToggle from "./ThemeToggle";
-import AuthButtons from "./AuthButtons";
 import UserDropdown from "./UserDropdown";
 import MobileMenu from "./MobileMenu";
 import NavLinks from "./NavLinks";
@@ -70,7 +69,7 @@ const NavBar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            <NavLinks />
+            {user && <NavLinks />}
 
             {user && (
               <CartDropdown cartItems={cartItems} cartTotal={cartTotal} />
@@ -79,11 +78,7 @@ const NavBar = () => {
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
             {/* Auth Section */}
-            {!user ? (
-              <AuthButtons onLogin={handleLogin} />
-            ) : (
-              <UserDropdown user={user} onLogout={handleLogout} />
-            )}
+            {user && <UserDropdown user={user} onLogout={handleLogout} />}
           </div>
 
           {/* Mobile Menu Button */}
