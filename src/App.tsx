@@ -33,7 +33,6 @@ const App = () => {
             <Route
               path="/manage-inventory/:section?"
               element={
-                // this one should be admin + epmploee route
                 <AdminRoute>
                   <ManageInventory />
                 </AdminRoute>
