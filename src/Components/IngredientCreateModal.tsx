@@ -3,13 +3,9 @@ import type {
   IngredientAllergen,
   IngredientRequest,
   IngredientType,
-} from "../types/index.ts";
-import { ingredientTypeOptions, ingredientAllergenOptions } from "../types/index.ts";
-import {
-  formatName,
-  namePattern,
-  nameTitle,
-} from "../utils/nameFormatting.ts";
+} from "../types";
+import { ingredientTypeOptions, ingredientAllergenOptions } from "../types";
+import { formatName, namePattern, nameTitle } from "../utils/nameFormatting.ts";
 
 type IngredientCreateModalProps = {
   onSubmit: (values: IngredientRequest) => void;
@@ -62,7 +58,12 @@ export const IngredientCreateModal = ({
         <label className="mb-2 block font-medium text-main-text">Type</label>
         <div className="mb-4 max-h-32 overflow-y-auto scrollbar-themed rounded-2xl border border-ui-border">
           <div className="flex flex-wrap gap-2 p-3">
-            {(Object.entries(ingredientTypeOptions) as [IngredientType, string][]).map(([value, label]) => (
+            {(
+              Object.entries(ingredientTypeOptions) as [
+                IngredientType,
+                string,
+              ][]
+            ).map(([value, label]) => (
               <button
                 key={value}
                 type="button"
@@ -92,7 +93,12 @@ export const IngredientCreateModal = ({
         </label>
         <div className="mb-4 max-h-32 overflow-y-auto scrollbar-themed rounded-2xl border border-ui-border">
           <div className="flex flex-wrap gap-2 p-3">
-            {(Object.entries(ingredientAllergenOptions) as [IngredientAllergen, string][]).map(([value, label]) => (
+            {(
+              Object.entries(ingredientAllergenOptions) as [
+                IngredientAllergen,
+                string,
+              ][]
+            ).map(([value, label]) => (
               <button
                 key={value}
                 type="button"
