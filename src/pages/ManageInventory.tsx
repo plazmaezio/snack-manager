@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import IngredientsManager from "../Components/IngredientsManager";
-import DishesManager from "../Components/DishesManager";
-import WeeklyMenu from "../Components/WeeklyMenu";
+// import DishesManager from "../Components/DishesManager";
+// import WeeklyMenu from "../Components/WeeklyMenu";
 
 const sections = ["ingredients", "dishes", "menu"] as const;
 type ManageInventorySection = (typeof sections)[number];
@@ -65,8 +65,8 @@ const ManageInventory = () => {
         </section>
 
         {activeSection === "ingredients" && <IngredientsManager />}
-        {activeSection === "dishes" && <DishesManager />}
-        {activeSection === "menu" && <WeeklyMenu />}
+        {/* {activeSection === "dishes" && <DishesManager />}
+        {activeSection === "menu" && <WeeklyMenu />} */}
       </div>
     </div>
   );
