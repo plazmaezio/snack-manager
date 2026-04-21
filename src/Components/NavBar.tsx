@@ -77,7 +77,7 @@ const NavBar = () => {
 
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
-            {/* Auth Section */}
+            {/* Dropdown Section */}
             {user && <UserDropdown user={user} onLogout={handleLogout} />}
           </div>
 

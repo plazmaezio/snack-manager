@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import type { DishResponse, UserResponse } from "../types";
 import MobileNavLinks from "./MobileNavLinks";
-import { Pencil, ShoppingCart, LogOut, Plus } from "lucide-react";
+import { Pencil, ShoppingCart, LogOut, Plus, LayoutGrid } from "lucide-react";
 
 interface CartItem {
   dish: DishResponse;
@@ -30,6 +30,11 @@ const MobileMenu = ({
   if (!isOpen) return null;
 
   const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onClose();
+  };
 
   return (
     <div className="md:hidden bg-main-bg border-t border-ui-border">
@@ -68,11 +73,12 @@ const MobileMenu = ({
             <p className="px-4 py-2 font-semibold text-heading">
               Hello, {user?.username}!
             </p>
+
+            {/* ADMIN buttons */}
             {user.type === "ADMIN" && (
               <button
                 onClick={() => {
-                  navigate("/create-account");
-                  onClose();
+                  handleNavigation("/create-account");
                 }}
                 className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2"
               >
@@ -80,6 +86,21 @@ const MobileMenu = ({
                 Create Account
               </button>
             )}
+
+            {/* ADMIN and EMPLOYEE buttons */}
+            {(user.type === "ADMIN" || user.type === "EMPLOYEE") && (
+              <button
+                onClick={() => {
+                  handleNavigation("manage-inventory");
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2"
+              >
+                <LayoutGrid className="w-4 h-4" />
+                Manage Inventory
+              </button>
+            )}
+
+            {/* NO RESTRICTIONS: All Authenticated Users */}
             <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2">
               <Pencil className="w-4 h-4" />
               Edit Profile
