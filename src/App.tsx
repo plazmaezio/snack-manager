@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import ManageInventory from "./pages/ManageInventory";
 import NavBar from "./components/NavBar";
-import AdminRoute from "./components/AdminRoute";
+import RoleRoute from "./components/RoleRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -25,18 +25,18 @@ const App = () => {
             <Route
               path="/create-account"
               element={
-                <AdminRoute>
+                <RoleRoute allowedRoles={["ADMIN"]}>
                   <CreateAccount />
-                </AdminRoute>
+                </RoleRoute>
               }
             />
             <Route
               path="/manage-inventory/:section?"
               element={
                 // this one should be admin + epmploee route
-                <AdminRoute>
+                <RoleRoute allowedRoles={["ADMIN", "EMPLOYEE"]}>
                   <ManageInventory />
-                </AdminRoute>
+                </RoleRoute>
               }
             />
           </Route>
