@@ -67,6 +67,10 @@ form input::placeholder {
   --form-bg: var(--bg);
   --input-bg: #f9fafb;
   --ui-border: var(--border);
+
+  --scrollbar-thumb: var(--accent-border);
+  --scrollbar-thumb-hover: var(--accent);
+  --scrollbar-track: var(--accent-bg);
 }
 
 /* --- DARK THEME --- */
@@ -83,6 +87,10 @@ form input::placeholder {
   --form-bg: #1f2937;
   --input-bg: #374151;
   --ui-border: #4b5563;
+
+  --scrollbar-thumb: var(--accent-border);
+  --scrollbar-thumb-hover: var(--accent);
+  --scrollbar-track: var(--accent-bg);
 }
 
 form input:-webkit-autofill,
@@ -317,9 +325,9 @@ form input:-webkit-autofill:focus {
 
 /* --- CUSTOM SCROLLBARS --- */
 .scrollbar-themed {
-  /* Firefox: Uses your theme variables directly */
+  /* Firefox */
   scrollbar-width: thin;
-  scrollbar-color: var(--ui-border) transparent;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 /* Chrome, Edge, and Safari */
@@ -329,14 +337,14 @@ form input:-webkit-autofill:focus {
 }
 
 .scrollbar-themed::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--scrollbar-track);
   /* margin creates a 'stop' so it doesn't hit the rounded corners */
   margin: 4px;
 }
 
 .scrollbar-themed::-webkit-scrollbar-thumb {
-  /* 1. Base color from your border variable */
-  background-color: var(--ui-border);
+  /* 1. Base color from theme token */
+  background-color: var(--scrollbar-thumb);
 
   /* 2. The 'Inset' look to prevent corner leaking */
   border: 3px solid transparent;
@@ -348,15 +356,12 @@ form input:-webkit-autofill:focus {
 }
 
 .scrollbar-themed::-webkit-scrollbar-thumb:hover {
-  /* Highlights using your accent/brand color */
-  background-color: var(--accent);
+  background-color: var(--scrollbar-thumb-hover);
 }
 
 /* Specific Dark Mode refinement */
 .dark .scrollbar-themed::-webkit-scrollbar-thumb {
-  /* In dark mode, we can slightly brighten the thumb so it doesn't 
-     completely disappear into the dark background */
-  background-color: var(--ui-border);
+  background-color: var(--scrollbar-thumb);
   filter: brightness(1.2);
 }
 

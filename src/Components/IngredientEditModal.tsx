@@ -33,99 +33,99 @@ export const IngredientEditModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-main-bg/70 px-4 py-4 backdrop-blur-sm">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-lg rounded-3xl border border-ui-border bg-main-bg p-6 text-left shadow-xl"
+        className="w-full max-w-lg max-h-[90vh] flex flex-col rounded-3xl border border-ui-border bg-main-bg p-5 text-left shadow-xl overflow-hidden"
       >
         <h2 className="mb-2 text-2xl font-semibold text-heading">
           Edit ingredient
         </h2>
-        <p className="mb-6 text-sm text-main-text">
-          Keep the record fields aligned with the shared list component.
-        </p>
+        <div className="flex-1 overflow-y-auto scrollbar-themed pr-1">
+          <label
+            htmlFor="ingredient-name"
+            className="mb-1 block font-medium text-main-text"
+          >
+            Name
+          </label>
+          <input
+            id="ingredient-name"
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            onBlur={(event) => setName(formatName(event.target.value))}
+            placeholder="Enter ingredient name"
+            required
+            pattern={namePattern}
+            title={nameTitle}
+            className="mb-4 w-full rounded-full border border-ui-border bg-(--input-bg) px-4 py-2.5 text-main-text outline-none transition focus:border-brand"
+          />
 
-        {/* --- NAME INPUT --- */}
-        <label
-          htmlFor="ingredient-name"
-          className="mb-1 block font-medium text-main-text"
-        >
-          Name
-        </label>
-        <input
-          id="ingredient-name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={(e) => setName(formatName(e.target.value))}
-          placeholder="Enter ingredient name"
-          required
-          pattern={namePattern}
-          title={nameTitle}
-          className="mb-4 w-full rounded-full border border-ui-border bg-(--input-bg) px-4 py-2.5 text-main-text outline-none focus:border-brand"
-        />
+          <label className="mb-2 block font-medium text-main-text">Type</label>
+          <div className="mb-4 rounded-2xl border border-ui-border overflow-hidden">
+            <div className="max-h-32 overflow-y-auto scrollbar-themed p-3">
+              <div className="flex flex-wrap gap-2">
+                {(
+                  Object.entries(ingredientTypeOptions) as [
+                    IngredientType,
+                    string,
+                  ][]
+                ).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setType(value)}
+                    className="rounded-full py-2 px-4 text-sm font-medium transition"
+                    style={
+                      type === value
+                        ? { backgroundColor: "var(--accent)", color: "white" }
+                        : {
+                            backgroundColor: "var(--input-bg)",
+                            color: "var(--text-h)",
+                            border: "1px solid var(--ui-border)",
+                          }
+                    }
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
 
-        {/* --- TYPE SECTION --- */}
-        <label className="mb-2 block font-medium text-main-text">Type</label>
-        {/* WRAPPER 1: Clips the corners */}
-        <div className="mb-4 rounded-2xl border border-ui-border overflow-hidden">
-          {/* INNER 2: Handles the scrollbar */}
-          <div className="max-h-48 overflow-y-auto scrollbar-themed p-3">
-            <div className="flex flex-wrap gap-2">
-              {(
-                Object.entries(ingredientTypeOptions) as [
-                  IngredientType,
-                  string,
-                ][]
-              ).map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setType(value)}
-                  className={`rounded-full py-2 px-4 text-sm font-medium transition border ${
-                    type === value
-                      ? "bg-brand text-white border-brand"
-                      : "bg-(--input-bg) text-main-text border-ui-border hover:border-brand/50"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+          <label className="mb-2 block font-medium text-main-text">
+            Allergen
+          </label>
+          <div className="mb-4 rounded-2xl border border-ui-border overflow-hidden">
+            <div className="max-h-32 overflow-y-auto scrollbar-themed p-3">
+              <div className="flex flex-wrap gap-2">
+                {(
+                  Object.entries(ingredientAllergenOptions) as [
+                    IngredientAllergen,
+                    string,
+                  ][]
+                ).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setAllergen(value)}
+                    className="rounded-full py-2 px-4 text-sm font-medium transition"
+                    style={
+                      allergen === value
+                        ? { backgroundColor: "var(--accent)", color: "white" }
+                        : {
+                            backgroundColor: "var(--input-bg)",
+                            color: "var(--text-h)",
+                            border: "1px solid var(--ui-border)",
+                          }
+                    }
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* --- ALLERGEN SECTION --- */}
-        <label className="mb-2 block font-medium text-main-text">
-          Allergen
-        </label>
-        {/* WRAPPER 1: Clips the corners */}
-        <div className="mb-4 rounded-2xl border border-ui-border overflow-hidden">
-          {/* INNER 2: Handles the scrollbar */}
-          <div className="max-h-48 overflow-y-auto scrollbar-themed p-3">
-            <div className="flex flex-wrap gap-2">
-              {(
-                Object.entries(ingredientAllergenOptions) as [
-                  IngredientAllergen,
-                  string,
-                ][]
-              ).map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setAllergen(value)}
-                  className={`rounded-full py-2 px-4 text-sm font-medium transition border ${
-                    allergen === value
-                      ? "bg-brand text-white border-brand"
-                      : "bg-(--input-bg) text-main-text border-ui-border hover:border-brand/50"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* --- ACTIONS --- */}
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row bg-main-bg pt-2">
           <button
             type="button"
             onClick={onClose}
