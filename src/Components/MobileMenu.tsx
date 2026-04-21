@@ -72,6 +72,7 @@ const MobileMenu = ({
               <button
                 onClick={() => {
                   navigate("/create-account");
+                  onClose();
                 }}
                 className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2"
               >
