@@ -3,8 +3,8 @@ import type {
   IngredientAllergen,
   IngredientRequest,
   IngredientType,
-} from "../types";
-import { ingredientTypeOptions, ingredientAllergenOptions } from "../types";
+} from "../types/index.ts";
+import { ingredientTypeOptions, ingredientAllergenOptions } from "../types/index.ts";
 import {
   formatName,
   namePattern,
@@ -33,14 +33,11 @@ export const IngredientCreateModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-main-bg/70 px-4 py-4 backdrop-blur-sm">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-lg rounded-3xl border border-ui-border bg-main-bg p-6 text-left shadow-[0px_0px_10px_0px] shadow-black/10 dark:shadow-black/30"
+        className="w-full max-w-lg max-h-[85vh] overflow-y-auto scrollbar-themed rounded-3xl border border-ui-border bg-main-bg p-5 text-left shadow-[0px_0px_10px_0px] shadow-black/10 dark:shadow-black/30"
       >
         <h2 className="mb-2 text-2xl font-semibold text-heading">
           Create ingredient
         </h2>
-        <p className="mb-6 text-sm text-main-text">
-          Keep the record fields aligned with the shared list component.
-        </p>
 
         <label
           htmlFor="ingredient-name"
@@ -63,7 +60,7 @@ export const IngredientCreateModal = ({
         />
 
         <label className="mb-2 block font-medium text-main-text">Type</label>
-        <div className="mb-4 max-h-48 overflow-y-auto rounded-2xl border border-ui-border">
+        <div className="mb-4 max-h-32 overflow-y-auto scrollbar-themed rounded-2xl border border-ui-border">
           <div className="flex flex-wrap gap-2 p-3">
             {(Object.entries(ingredientTypeOptions) as [IngredientType, string][]).map(([value, label]) => (
               <button
@@ -93,7 +90,7 @@ export const IngredientCreateModal = ({
         <label className="mb-2 block font-medium text-main-text">
           Allergen
         </label>
-        <div className="mb-4 max-h-48 overflow-y-auto rounded-2xl border border-ui-border">
+        <div className="mb-4 max-h-32 overflow-y-auto scrollbar-themed rounded-2xl border border-ui-border">
           <div className="flex flex-wrap gap-2 p-3">
             {(Object.entries(ingredientAllergenOptions) as [IngredientAllergen, string][]).map(([value, label]) => (
               <button
@@ -120,7 +117,7 @@ export const IngredientCreateModal = ({
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <button
             type="button"
             onClick={onClose}
