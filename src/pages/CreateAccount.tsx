@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { type UserRequest, type UserType } from "../types/user.types";
 import { useAuth } from "../contexts/AuthContext";
 import SuccessPopUp from "../components/SuccessPopUp";
 
 const CreateAccount = () => {
   const [selectedType, setSelectedType] = useState<UserType>("CLIENT");
-  const navigate = useNavigate();
   const [inputError, setInputError] = useState<string[] | null>(null);
   const { createAccount } = useAuth();
   const [success, setSuccess] = useState(false);
@@ -179,20 +177,10 @@ const CreateAccount = () => {
 
           <button
             type="submit"
-            className="w-full mt-10 mb-3 bg-brand hover:opacity-90 active:scale-95 transition py-2.5 rounded-full text-white"
+            className="w-full mt-10 mb-4 bg-brand hover:opacity-90 active:scale-95 transition py-2.5 rounded-full text-white"
           >
             Create Account
           </button>
-
-          <p className="text-center mt-4">
-            Already have an account?{" "}
-            <button
-              onClick={() => navigate("/login")}
-              className="text-brand underline hover:opacity-80"
-            >
-              Login Now
-            </button>
-          </p>
         </form>
       </div>
     </>
