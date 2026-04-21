@@ -1,7 +1,6 @@
 export const namePattern = "^[A-Za-z\\s]+$";
 
-export const nameTitle =
-  "Name containing only letters and spaces";
+export const nameTitle = "Name containing only letters and spaces";
 
 const connectionWords = new Set([
   "a",
@@ -34,13 +33,15 @@ const toCapitalizedWord = (word: string) =>
   word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 
 export const formatName = (value: string) => {
-  const trimmedValue = value.trim().replace(/\s+/g, " ");
+  const cleanValue = value.replace(/[^A-Za-z\s]/g, " ");
+
+  const trimmedValue = cleanValue.trim().replace(/\s+/g, " ");
 
   if (trimmedValue.length === 0) {
-    return trimmedValue;
+    return "";
   }
 
-  const formattedWords = trimmedValue
+  return trimmedValue
     .split(" ")
     .map((word, index) => {
       const normalizedWord = word.toLowerCase();
@@ -53,10 +54,7 @@ export const formatName = (value: string) => {
         return normalizedWord;
       }
 
-      return toCapitalizedWord(word);
-    });
-
-  const [firstWord, ...restWords] = formattedWords;
-
-  return [toCapitalizedWord(firstWord), ...restWords].join(" ");
+      return toCapitalizedWord(normalizedWord);
+    })
+    .join(" ");
 };

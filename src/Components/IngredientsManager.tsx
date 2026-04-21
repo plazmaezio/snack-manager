@@ -100,7 +100,8 @@ const IngredientsManager = () => {
         searchFields={["name", "type", "allergen"]}
         fieldFormatters={{
           type: (value) => ingredientTypeOptions[value] ?? String(value),
-          allergen: (value) => ingredientAllergenOptions[value] ?? String(value),
+          allergen: (value) =>
+            ingredientAllergenOptions[value] ?? String(value),
         }}
         renderCreateModal={(onClose) => (
           <IngredientCreateModal

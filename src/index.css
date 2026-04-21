@@ -67,6 +67,10 @@ form input::placeholder {
   --form-bg: var(--bg);
   --input-bg: #f9fafb;
   --ui-border: var(--border);
+
+  --scrollbar-thumb: var(--accent-border);
+  --scrollbar-thumb-hover: var(--accent);
+  --scrollbar-track: var(--accent-bg);
 }
 
 /* --- DARK THEME --- */
@@ -83,6 +87,10 @@ form input::placeholder {
   --form-bg: #1f2937;
   --input-bg: #374151;
   --ui-border: #4b5563;
+
+  --scrollbar-thumb: var(--accent-border);
+  --scrollbar-thumb-hover: var(--accent);
+  --scrollbar-track: var(--accent-bg);
 }
 
 form input:-webkit-autofill,
@@ -313,4 +321,51 @@ form input:-webkit-autofill:focus {
     right: 0;
     background: linear-gradient(to left, var(--main-bg), rgba(0, 0, 0, 0));
   }
+}
+
+/* --- CUSTOM SCROLLBARS --- */
+.scrollbar-themed {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Chrome, Edge, and Safari */
+.scrollbar-themed::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.scrollbar-themed::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  /* margin creates a 'stop' so it doesn't hit the rounded corners */
+  margin: 4px;
+}
+
+.scrollbar-themed::-webkit-scrollbar-thumb {
+  /* 1. Base color from theme token */
+  background-color: var(--scrollbar-thumb);
+
+  /* 2. The 'Inset' look to prevent corner leaking */
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 10px;
+
+  /* 3. Smooth transition for hover effects */
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-themed::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+/* Specific Dark Mode refinement */
+.dark .scrollbar-themed::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  filter: brightness(1.2);
+}
+
+/* Ensure the horizontal scrollbar (if any) also respects the theme */
+.scrollbar-themed::-webkit-scrollbar-corner {
+  background: transparent;
 }
