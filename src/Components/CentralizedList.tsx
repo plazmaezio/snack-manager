@@ -3,12 +3,17 @@ import type { DishResponse, UserResponse, IngredientResponse } from "../types";
 
 type ClassTypes = DishResponse | UserResponse | IngredientResponse;
 
+type FieldFormatters<T> = Partial<{
+  [K in keyof T]: (value: T[K], item: T) => string;
+}>;
+
 interface CentralizedListProps<T extends ClassTypes> {
   data: T[];
   model: new (...args: any[]) => T;
   sortFields: (keyof T)[];
   defaultSortField?: keyof T;
   searchFields: (keyof T)[];
+  fieldFormatters?: FieldFormatters<T>;
   renderCreateModal: (onClose: () => void) => React.ReactNode;
   renderEditModal: (item: T, onClose: () => void) => React.ReactNode;
   onDelete: (ids: string[]) => void;
@@ -21,6 +26,7 @@ const CentralizedList = <T extends ClassTypes>({
   sortFields,
   defaultSortField,
   searchFields,
+  fieldFormatters,
   renderCreateModal,
   renderEditModal,
   onDelete,
@@ -123,6 +129,19 @@ const CentralizedList = <T extends ClassTypes>({
 
   const handleOpenEdit = (item: T) => setEditingItem(item);
   const handleCloseEdit = () => setEditingItem(null);
+
+  const getDisplayValue = (item: T, field: keyof T) => {
+    const rawValue = item[field];
+    const formatter = fieldFormatters?.[field] as
+      | ((value: T[keyof T], item: T) => string)
+      | undefined;
+
+    if (formatter) {
+      return formatter(rawValue as T[keyof T], item);
+    }
+
+    return String(rawValue ?? "");
+  };
 
   return (
     <>
@@ -240,12 +259,21 @@ const CentralizedList = <T extends ClassTypes>({
 
                         {tableFields.map((field) => (
                           <td key={field} className="px-4 py-4 align-middle">
+                            {(() => {
+                              const displayValue = getDisplayValue(
+                                item,
+                                field as keyof T,
+                              );
+
+                              return (
                             <span
                               className="block truncate text-main-text"
-                              title={String(item[field as keyof T] ?? "")}
+                              title={displayValue}
                             >
-                              {String(item[field as keyof T] ?? "")}
+                              {displayValue}
                             </span>
+                              );
+                            })()}
                           </td>
                         ))}
 
