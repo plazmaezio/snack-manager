@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import IngredientsManager from "../Components/IngredientsManager";
-// import DishesManager from "../Components/DishesManager";
-// import WeeklyMenu from "../Components/WeeklyMenu";
+import IngredientsManager from "../components/IngredientsManager";
+// import DishesManager from "../components/DishesManager";
+// import WeeklyMenu from "../components/WeeklyMenu";
 
 const sections = ["ingredients", "dishes", "menu"] as const;
 type ManageInventorySection = (typeof sections)[number];
@@ -10,13 +10,16 @@ type ManageInventorySection = (typeof sections)[number];
 const isManageInventorySection = (
   value: string | undefined,
 ): value is ManageInventorySection =>
-  typeof value === "string" && sections.includes(value as ManageInventorySection);
+  typeof value === "string" &&
+  sections.includes(value as ManageInventorySection);
 
 const ManageInventory = () => {
   const { section } = useParams();
   const navigate = useNavigate();
 
-  const activeSection: ManageInventorySection = isManageInventorySection(section)
+  const activeSection: ManageInventorySection = isManageInventorySection(
+    section,
+  )
     ? section
     : "ingredients";
 

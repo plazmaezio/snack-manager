@@ -5,9 +5,9 @@ import CreateAccount from "./pages/CreateAccount";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import ManageInventory from "./pages/ManageInventory";
-import NavBar from "./Components/NavBar";
-import AdminRoute from "./Components/AdminRoute";
-import ProtectedRoute from "./Components/ProtectedRoute";
+import NavBar from "./components/NavBar";
+import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
@@ -33,6 +33,7 @@ const App = () => {
             <Route
               path="/manage-inventory/:section?"
               element={
+                // this one should be admin + epmploee route
                 <AdminRoute>
                   <ManageInventory />
                 </AdminRoute>

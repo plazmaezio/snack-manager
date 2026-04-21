@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import CentralizedList from "../Components/CentralizedList";
-import { IngredientCreateModal } from "../Components/IngredientCreateModal";
-import { IngredientEditModal } from "../Components/IngredientEditModal";
+import CentralizedList from "../components/CentralizedList";
+import { IngredientCreateModal } from "../components/IngredientCreateModal";
+import { IngredientEditModal } from "../components/IngredientEditModal";
 import type {
   IngredientAllergen,
   IngredientRequest,
