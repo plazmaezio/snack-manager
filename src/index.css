@@ -314,3 +314,53 @@ form input:-webkit-autofill:focus {
     background: linear-gradient(to left, var(--main-bg), rgba(0, 0, 0, 0));
   }
 }
+
+/* --- CUSTOM SCROLLBARS --- */
+.scrollbar-themed {
+  /* Firefox: Uses your theme variables directly */
+  scrollbar-width: thin;
+  scrollbar-color: var(--ui-border) transparent;
+}
+
+/* Chrome, Edge, and Safari */
+.scrollbar-themed::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.scrollbar-themed::-webkit-scrollbar-track {
+  background: transparent;
+  /* margin creates a 'stop' so it doesn't hit the rounded corners */
+  margin: 4px;
+}
+
+.scrollbar-themed::-webkit-scrollbar-thumb {
+  /* 1. Base color from your border variable */
+  background-color: var(--ui-border);
+
+  /* 2. The 'Inset' look to prevent corner leaking */
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 10px;
+
+  /* 3. Smooth transition for hover effects */
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-themed::-webkit-scrollbar-thumb:hover {
+  /* Highlights using your accent/brand color */
+  background-color: var(--accent);
+}
+
+/* Specific Dark Mode refinement */
+.dark .scrollbar-themed::-webkit-scrollbar-thumb {
+  /* In dark mode, we can slightly brighten the thumb so it doesn't 
+     completely disappear into the dark background */
+  background-color: var(--ui-border);
+  filter: brightness(1.2);
+}
+
+/* Ensure the horizontal scrollbar (if any) also respects the theme */
+.scrollbar-themed::-webkit-scrollbar-corner {
+  background: transparent;
+}
