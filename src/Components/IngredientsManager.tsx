@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import CentralizedList from "../Components/CentralizedList";
-import { IngredientCreateModal } from "../Components/IngredientCreateModal";
-import { IngredientEditModal } from "../Components/IngredientEditModal";
+import CentralizedList from "../components/CentralizedList";
+import { IngredientCreateModal } from "../components/IngredientCreateModal";
+import { IngredientEditModal } from "../components/IngredientEditModal";
 import type {
   IngredientAllergen,
   IngredientRequest,
   IngredientResponse,
   IngredientType,
 } from "../types";
+import { ingredientAllergenOptions, ingredientTypeOptions } from "../types";
 import { api } from "../services/api";
 
 class IngredientModel implements IngredientResponse {
@@ -97,6 +98,10 @@ const IngredientsManager = () => {
         sortFields={["name", "type", "allergen"]}
         defaultSortField="name"
         searchFields={["name", "type", "allergen"]}
+        fieldFormatters={{
+          type: (value) => ingredientTypeOptions[value] ?? String(value),
+          allergen: (value) => ingredientAllergenOptions[value] ?? String(value),
+        }}
         renderCreateModal={(onClose) => (
           <IngredientCreateModal
             onSubmit={(values) => {
