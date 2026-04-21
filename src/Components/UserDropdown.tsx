@@ -66,15 +66,17 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
                 }`}
             </p>
           </div>
-          <button
-            onClick={() => {
-              navigate("/create-account");
-            }}
-            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Create Account
-          </button>
+          {user.type === "ADMIN" && (
+            <button
+              onClick={() => {
+                navigate("/create-account");
+              }}
+              className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Create Account
+            </button>
+          )}
           <button
             onClick={() => {
               navigate("/edit-profile");
