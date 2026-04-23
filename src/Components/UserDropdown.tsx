@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { UserResponse } from "../types";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Plus, Pencil, ShoppingCart, LogOut } from "lucide-react";
+import { Plus, Pencil, ShoppingCart, LogOut, LayoutGrid } from "lucide-react";
 
 interface UserDropdownProps {
   user: UserResponse;
@@ -23,6 +23,11 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setIsOpen(false);
+  };
 
   return (
     <div className="relative">
@@ -66,10 +71,11 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
                 }`}
             </p>
           </div>
+          {/* ADMIN buttons */}
           {user.type === "ADMIN" && (
             <button
               onClick={() => {
-                navigate("/create-account");
+                handleNavigation("/create-account");
               }}
               className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
             >
@@ -77,9 +83,24 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
               Create Account
             </button>
           )}
+
+          {/* ADMIN and EMPLOYEE buttons */}
+          {(user.type === "ADMIN" || user.type === "EMPLOYEE") && (
+            <button
+              onClick={() => {
+                handleNavigation("manage-inventory");
+              }}
+              className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
+            >
+              <LayoutGrid className="w-4 h-4" />
+              Manage Inventory
+            </button>
+          )}
+
+          {/* NO RESTRICTIONS buttons: All Authenticated Users */}
           <button
             onClick={() => {
-              navigate("/edit-profile");
+              handleNavigation("/edit-profile");
             }}
             className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
           >
@@ -88,7 +109,7 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
           </button>
           <button
             onClick={() => {
-              navigate("/my-purchases");
+              handleNavigation("/my-purchases");
             }}
             className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
           >
