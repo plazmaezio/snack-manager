@@ -50,6 +50,7 @@ const createAccountService = async (
 
 const logoutService = () => {
   localStorage.removeItem("jwt");
+  localStorage.removeItem("cart");
 };
 
 const getCurrentUser = async (): Promise<UserResponse> => {

@@ -3,6 +3,7 @@ import type { DailyMenuResponse, DishResponse } from "../types";
 import { api } from "../services/api";
 import DailyMenuDish from "./DailyMenuDish";
 import { MENU_DISCOUNT } from "../config/dailyMenu";
+import { useCart } from "../contexts/CartContext";
 
 interface DailyMenuProps {
   day: string;
@@ -53,6 +54,7 @@ const DailyMenuContainer = ({
   dishes,
 }: DailyMenuProps) => {
   const [menu, setMenu] = useState<DailyMenuResponse | null>(mockMenu);
+  const { addMenu } = useCart();
 
   // merge real dishes with mocks, getDish looks in both
   const allDishes = [...dishes, ...mockDishes];
@@ -98,6 +100,11 @@ const DailyMenuContainer = ({
     return Number((price * MENU_DISCOUNT).toFixed(2));
   };
 
+  const handleAddToCart = () => {
+    if (!menu) return;
+    addMenu(menu, calculateMenuPrice());
+  };
+
   return (
     <div className={`${isPast ? "opacity-50" : ""}`}>
       <h4
@@ -130,7 +137,10 @@ const DailyMenuContainer = ({
 
       {/* Add to cart button */}
       {isToday && (
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button
+          onClick={handleAddToCart}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
           Add to Cart
         </button>
       )}
