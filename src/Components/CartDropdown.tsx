@@ -1,15 +1,21 @@
-import type { DishResponse } from "../types";
+import type { CartItem } from "../types";
 import { ShoppingCart } from "lucide-react";
-
-interface CartItem {
-  dish: DishResponse;
-  quantity: number;
-}
 
 interface CartDropdownProps {
   cartItems: CartItem[];
   cartTotal: number;
 }
+
+const getItemKey = (item: CartItem) =>
+  item.type === "dish" ? item.dish.id : item.menu.id;
+
+const getItemName = (item: CartItem) =>
+  item.type === "dish" ? item.dish.name : `Menu – ${item.menu.date}`;
+
+const getItemPrice = (item: CartItem) =>
+  item.type === "dish"
+    ? item.dish.price * item.quantity
+    : item.price * item.quantity;
 
 const CartDropdown = ({ cartItems, cartTotal }: CartDropdownProps) => {
   return (
@@ -30,17 +36,17 @@ const CartDropdown = ({ cartItems, cartTotal }: CartDropdownProps) => {
             <>
               {cartItems.map((item) => (
                 <div
-                  key={item.dish.id}
+                  key={getItemKey(item)}
                   className="flex justify-between items-center mb-2 pb-2 border-b border-ui-border last:border-b-0"
                 >
                   <div>
-                    <p className="font-medium text-sm">{item.dish.name}</p>
+                    <p className="font-medium text-sm">{getItemName(item)}</p>
                     <p className="text-xs text-gray-500">
                       Qty: {item.quantity}
                     </p>
                   </div>
                   <p className="font-semibold">
-                    ${(item.dish.price * item.quantity).toFixed(2)}
+                    ${getItemPrice(item).toFixed(2)}
                   </p>
                 </div>
               ))}

@@ -1,53 +1,20 @@
 import { useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 import { Link, useNavigate } from "react-router-dom";
-import type { DishResponse } from "../types";
 import { useAuth } from "../contexts/AuthContext";
 import CartDropdown from "./CartDropdown";
 import ThemeToggle from "./ThemeToggle";
 import UserDropdown from "./UserDropdown";
 import MobileMenu from "./MobileMenu";
 import NavLinks from "./NavLinks";
+import { useCart } from "../contexts/CartContext";
 
 const NavBar = () => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
-
-  interface CartItem {
-    dish: DishResponse;
-    quantity: number;
-  }
-
-  // Mock data
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      dish: {
-        id: "1",
-        name: "Chips",
-        ingredientNames: ["Potatoes", "Salt"],
-        price: 2.5,
-        imageUrl: "https://via.placeholder.com/150",
-      },
-      quantity: 2,
-    },
-    {
-      dish: {
-        id: "2",
-        name: "Cookie",
-        ingredientNames: ["Flour", "Sugar"],
-        price: 1.5,
-        imageUrl: "https://via.placeholder.com/150",
-      },
-      quantity: 1,
-    },
-  ]);
-
-  const cartTotal = cartItems.reduce(
-    (sum, item) => sum + item.dish.price * item.quantity,
-    0,
-  );
+  const { cartItems, cartTotal } = useCart();
 
   const handleLogin = () => {
     navigate("/login");

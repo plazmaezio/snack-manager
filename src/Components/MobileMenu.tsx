@@ -1,12 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import type { DishResponse, UserResponse } from "../types";
+import type { CartItem, UserResponse } from "../types";
 import MobileNavLinks from "./MobileNavLinks";
 import { Pencil, ShoppingCart, LogOut, Plus, LayoutGrid } from "lucide-react";
-
-interface CartItem {
-  dish: DishResponse;
-  quantity: number;
-}
 
 interface MobileMenuProps {
   isOpen: boolean;
