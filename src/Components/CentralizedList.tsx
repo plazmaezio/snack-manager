@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { formatName } from "../utils/nameFormatting.ts";
 import type { DishResponse, UserResponse, IngredientResponse } from "../types";
 
 type ClassTypes = DishResponse | UserResponse | IngredientResponse;
@@ -51,6 +52,12 @@ const CentralizedList = <T extends ClassTypes>({
 
     return Array.from(fieldNames).filter((field) => field !== "id");
   }, [data]);
+
+  const humanizeField = (field: string) =>
+    formatName(
+      // split camelCase and underscores into words before formatting
+      field.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " "),
+    );
 
   const processedData = useMemo(() => {
     let result = [...data];
@@ -172,7 +179,7 @@ const CentralizedList = <T extends ClassTypes>({
               onClick={() => handleSortFieldChange(field)}
               className="rounded-full border border-ui-border bg-(--input-bg) px-4 py-2 text-sm font-medium text-main-text transition hover:border-brand hover:text-brand"
             >
-              {String(field)}
+              {humanizeField(String(field))}
               {sortField === field
                 ? sortDirection === "asc"
                   ? " ▲"
@@ -220,7 +227,7 @@ const CentralizedList = <T extends ClassTypes>({
                       key={field}
                       className="px-4 py-3 font-semibold capitalize"
                     >
-                      {field}
+                      {humanizeField(field)}
                     </th>
                   ))}
                   <th className="w-32 px-4 py-3 font-semibold">Actions</th>
