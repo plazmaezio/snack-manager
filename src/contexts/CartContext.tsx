@@ -12,6 +12,7 @@ interface CartContextType {
   addDish: (dish: DishResponse) => void;
   addMenu: (menu: DailyMenuResponse, price: number) => void;
   removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   cartTotal: number;
 }
 
@@ -73,6 +74,24 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     );
   };
 
+  const updateQuantity = (id: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeItem(id);
+      return;
+    }
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.type === "dish"
+          ? item.dish.id === id
+            ? { ...item, quantity }
+            : item
+          : item.menu.id === id
+            ? { ...item, quantity }
+            : item,
+      ),
+    );
+  };
+
   const cartTotal = cartItems.reduce((sum, item) => {
     const price = item.type === "dish" ? item.dish.price : item.price;
     return sum + price * item.quantity;
@@ -80,7 +99,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addDish, addMenu, removeItem, cartTotal }}
+      value={{ cartItems, addDish, addMenu, removeItem, updateQuantity, cartTotal }}
     >
       {children}
     </CartContext.Provider>

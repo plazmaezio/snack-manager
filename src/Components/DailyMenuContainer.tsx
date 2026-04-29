@@ -40,7 +40,7 @@ const mockDishes: DishResponse[] = [
   {
     id: "3",
     name: "Veggie Stir-fry",
-    ingredientNames: ["Bell Peppers", "Broccoli", "Tofu"],
+    ingredientNames: ["Bell Peppers", "Broccoli", "Cheese", "Lemon"],
     price: 7.99,
     imageUrl: "",
   },
