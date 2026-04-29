@@ -70,7 +70,7 @@ const CartOrderSummary = ({
 
     <Link
       to="/"
-      className="block w-full px-4 py-2 border border-ui-border text-center font-medium rounded-md text-main-text transition-colors hover:bg-gray-50"
+      className="block w-full px-4 py-2 border border-ui-border text-center font-medium rounded-md text-main-text transition-colors hover:bg-brand-bg"
     >
       Continue Shopping
     </Link>
