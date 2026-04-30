@@ -5,7 +5,7 @@ import type { DishResponse, UserResponse, IngredientResponse } from "../types";
 type ClassTypes = DishResponse | UserResponse | IngredientResponse;
 
 type FieldFormatters<T> = Partial<{
-  [K in keyof T]: (value: T[K], item: T) => string;
+  [K in keyof T]: (value: T[K], item: T) => React.ReactNode;
 }>;
 
 interface CentralizedListProps<T extends ClassTypes> {
@@ -137,10 +137,10 @@ const CentralizedList = <T extends ClassTypes>({
   const handleOpenEdit = (item: T) => setEditingItem(item);
   const handleCloseEdit = () => setEditingItem(null);
 
-  const getDisplayValue = (item: T, field: keyof T) => {
+  const getDisplayValue = (item: T, field: keyof T): React.ReactNode => {
     const rawValue = item[field];
     const formatter = fieldFormatters?.[field] as
-      | ((value: T[keyof T], item: T) => string)
+      | ((value: T[keyof T], item: T) => React.ReactNode)
       | undefined;
 
     if (formatter) {
@@ -272,14 +272,18 @@ const CentralizedList = <T extends ClassTypes>({
                                 field as keyof T,
                               );
 
-                              return (
-                            <span
-                              className="block truncate text-main-text"
-                              title={displayValue}
-                            >
-                              {displayValue}
-                            </span>
-                              );
+                              if (typeof displayValue === "string") {
+                                return (
+                                  <span
+                                    className="block truncate text-main-text"
+                                    title={displayValue}
+                                  >
+                                    {displayValue}
+                                  </span>
+                                );
+                              }
+
+                              return <>{displayValue}</>;
                             })()}
                           </td>
                         ))}

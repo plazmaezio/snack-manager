@@ -15,6 +15,7 @@ class DishModel implements DishResponse {
 
 const DishManager = () => {
   const [dishes, setDishes] = useState<DishResponse[]>([]);
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,9 +23,30 @@ const DishManager = () => {
     const fetchDishes = async () => {
       setLoading(true);
       try {
-        const data = await api.get<DishResponse[]>("/dishes");
+        const data = (await api.get("/dishes")) as DishResponse[];
         setDishes(data);
-      } catch {
+
+        // fetch image URLs for each dish
+        try {
+          const entries = await Promise.all(
+            data.map(async (d) => {
+              try {
+                const res = (await api.get(
+                  `/dishes/${d.id}/image-url`,
+                )) as { url: string };
+                const url = res?.url ?? d.imageUrl ?? "";
+                return [d.id, url] as const;
+              } catch {
+                return [d.id, d.imageUrl ?? ""] as const;
+              }
+            }),
+          );
+
+          setImageUrls(Object.fromEntries(entries));
+        } catch {
+          // ignore image fetching errors
+        }
+      } catch (e) {
         setError("Failed to load dishes");
       } finally {
         setLoading(false);
@@ -96,6 +118,21 @@ const DishManager = () => {
         fieldFormatters={{
           ingredientNames: (value) =>
             Array.isArray(value) ? value.join(", ") : String(value),
+          imageUrl: (_value, item) => {
+            const src = imageUrls[item.id] || item.imageUrl || "";
+
+            if (!src) {
+              return <div className="h-12 w-12 rounded bg-ui-border" />;
+            }
+
+            return (
+              <img
+                src={src}
+                alt={item.name}
+                className="h-12 w-12 object-cover rounded"
+              />
+            );
+          },
         }}
         renderCreateModal={(onClose) => (
           <DishCreateModal
