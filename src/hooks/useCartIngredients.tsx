@@ -5,8 +5,10 @@ import { getMenuDishNames } from "../types/cart.helpers";
 import { api } from "../services/api";
 
 const separateIngredientsByAllergen = (ingredients: IngredientResponse[]) => ({
-  withAllergens: ingredients.filter((i) => i.allergen !== "NONE"),
-  withoutAllergens: ingredients.filter((i) => i.allergen === "NONE"),
+  withAllergens: [...new Set(ingredients.filter((i) => i.allergen !== "NONE"))],
+  withoutAllergens: [
+    ...new Set(ingredients.filter((i) => i.allergen === "NONE")),
+  ],
 });
 
 const useCartIngredients = () => {
@@ -40,6 +42,7 @@ const useCartIngredients = () => {
 
     return [...new Set(resolved)];
   };
+
   const getDishByName = (name: string): DishResponse | undefined =>
     dishes.find((d) => d.name.toLowerCase() === name.toLowerCase());
 

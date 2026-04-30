@@ -10,7 +10,6 @@ import {
 import { Link } from "react-router-dom";
 import type { CartItem } from "../../types/cart.types";
 import type { IngredientResponse, DishResponse } from "../../types";
-import { ingredientAllergenOptions } from "../../types";
 import {
   getItemKey,
   getItemName,
