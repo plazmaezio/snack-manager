@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CentralizedList from "./CentralizedList";
 import { DishCreateModal } from "./DishCreateModal";
 import { DishEditModal } from "./DishEditModal";
-import type { DishRequest, DishResponse } from "../types";
+import type { DishRequest, DishResponse, IngredientResponse } from "../types";
 import { api } from "../services/api";
 
 class DishModel implements DishResponse {
@@ -16,6 +16,7 @@ class DishModel implements DishResponse {
 const DishManager = () => {
   const [dishes, setDishes] = useState<DishResponse[]>([]);
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+  const [availableIngredients, setAvailableIngredients] = useState<IngredientResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,11 +55,32 @@ const DishManager = () => {
     };
 
     fetchDishes();
+
+    const fetchIngredients = async () => {
+      try {
+        const data = (await api.get("/ingredients")) as IngredientResponse[];
+        setAvailableIngredients(data ?? []);
+      } catch {
+        // ignore ingredient fetch errors
+      }
+    };
+
+    fetchIngredients();
   }, []);
 
   const handleCreateDish = async (values: DishRequest) => {
     try {
-      const response = await api.post<DishResponse>("/dishes", values);
+      const formData = new FormData();
+      formData.append(
+        "dish",
+        new Blob([JSON.stringify(values.dish)], { type: "application/json" }),
+      );
+
+      if (values.image) {
+        formData.append("image", values.image);
+      }
+
+      const response = await api.post<DishResponse>("/dishes", formData);
       setDishes((prev) => [...prev, response]);
       setError(null);
     } catch {
@@ -68,14 +90,23 @@ const DishManager = () => {
 
   const handleUpdateDish = async (dishId: string, values: DishRequest) => {
     try {
-      await api.put<DishResponse>(`/dishes/${dishId}`, values);
+      const formData = new FormData();
+      formData.append(
+        "dish",
+        new Blob([JSON.stringify(values.dish)], { type: "application/json" }),
+      );
+
+      if (values.image) {
+        formData.append("image", values.image);
+      }
+
+      await api.put<DishResponse>(`/dishes/${dishId}`, formData);
       setDishes((current) =>
         current.map((dish) =>
           dish.id === dishId
             ? {
                 ...dish,
                 ...values.dish,
-                ...(values.imageUrl ? { imageUrl: values.imageUrl } : {}),
               }
             : dish,
         ),
@@ -96,6 +127,13 @@ const DishManager = () => {
     }
   };
 
+  const displayedDishes = dishes.map((d) => ({
+    ...d,
+    ingredientNames: Array.isArray(d.ingredientNames)
+      ? Array.from(new Set(d.ingredientNames))
+      : d.ingredientNames,
+  }));
+
   return (
     <div className="space-y-8">
       {(loading || error) && (
@@ -110,7 +148,7 @@ const DishManager = () => {
       )}
 
       <CentralizedList
-        data={dishes}
+        data={displayedDishes}
         model={DishModel}
         sortFields={["name", "price", "ingredientNames"]}
         defaultSortField="name"
@@ -120,7 +158,7 @@ const DishManager = () => {
             Array.isArray(value) ? value.join(", ") : String(value),
           imageUrl: (_value, item) => {
             const src = imageUrls[item.id] || item.imageUrl || "";
-
+          
             if (!src) {
               return <div className="h-12 w-12 rounded bg-ui-border" />;
             }
@@ -141,6 +179,7 @@ const DishManager = () => {
               onClose();
             }}
             onClose={onClose}
+            availableIngredients={availableIngredients}
           />
         )}
         renderEditModal={(item, onClose) => (
@@ -148,16 +187,18 @@ const DishManager = () => {
             initialValues={{
               dish: {
                 name: item.name,
-                ingredientNames: item.ingredientNames,
+                ingredientNames: Array.isArray(item.ingredientNames)
+                  ? Array.from(new Set(item.ingredientNames))
+                  : item.ingredientNames,
                 price: item.price,
               },
-              imageUrl: item.imageUrl,
             }}
             onSubmit={(values) => {
               handleUpdateDish(item.id, values);
               onClose();
             }}
             onClose={onClose}
+            availableIngredients={availableIngredients}
           />
         )}
         onDelete={handleDelete}

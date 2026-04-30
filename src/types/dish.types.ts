@@ -14,5 +14,5 @@ export interface DishResponse extends DishData {
 
 export interface DishRequest {
   dish: DishData;
-  imageUrl?: string;
+  image?: File | null;
 }
