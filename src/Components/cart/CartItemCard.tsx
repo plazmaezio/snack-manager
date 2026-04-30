@@ -207,22 +207,12 @@ const CartItemCard = ({
                           </p>
                         )}
 
-                      {/* Ingredients with allergens */}
                       {withAllergens.length > 0 && (
-                        <p className="text-xs text-yellow-700">
-                          {withAllergens
-                            .map(
-                              (i) =>
-                                `! ${i.name} (${ingredientAllergenOptions[i.allergen]})`,
-                            )
-                            .join(", ")}
-                        </p>
+                        <IngredientList ingredients={withAllergens} />
                       )}
 
                       {withoutAllergens.length > 0 && (
-                        <p className="text-xs text-main-text opacity-70">
-                          {withoutAllergens.map((i) => i.name).join(", ")}
-                        </p>
+                        <IngredientList ingredients={withoutAllergens} />
                       )}
                     </li>
                   );
