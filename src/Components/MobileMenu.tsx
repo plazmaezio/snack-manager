@@ -8,6 +8,7 @@ interface MobileMenuProps {
   user: UserResponse | null;
   cartItems: CartItem[];
   cartTotal: number;
+  totalQuantity: number;
   onClose: () => void;
   onLogin: () => void;
   onLogout: () => void;
@@ -16,13 +17,13 @@ interface MobileMenuProps {
 const MobileMenu = ({
   isOpen,
   user,
-  cartItems,
   cartTotal,
+  totalQuantity,
   onClose,
   onLogin,
   onLogout,
 }: MobileMenuProps) => {
-  const navigate = useNavigate(); // ← must be before any early return
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
@@ -30,8 +31,6 @@ const MobileMenu = ({
     navigate(path);
     onClose();
   };
-
-  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="md:hidden bg-main-bg border-t border-ui-border">

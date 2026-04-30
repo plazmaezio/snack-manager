@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 interface CartDropdownProps {
   cartItems: CartItem[];
   cartTotal: number;
+  totalQuantity: number;
 }
 
 const getItemKey = (item: CartItem) =>
@@ -18,9 +19,11 @@ const getItemPrice = (item: CartItem) =>
     ? item.dish.price * item.quantity
     : item.price * item.quantity;
 
-const CartDropdown = ({ cartItems, cartTotal }: CartDropdownProps) => {
-  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
+const CartDropdown = ({
+  cartItems,
+  cartTotal,
+  totalQuantity,
+}: CartDropdownProps) => {
   return (
     <div className="relative group">
       <Link
