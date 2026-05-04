@@ -2,6 +2,7 @@ import "./App.css";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
+import CartPreview from "./pages/CartPreview";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import ManageInventory from "./pages/ManageInventory";
@@ -22,6 +23,7 @@ const App = () => {
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
+            <Route path="/cart" element={<CartPreview />} />
             <Route
               path="/create-account"
               element={

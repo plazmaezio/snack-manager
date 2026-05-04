@@ -9,13 +9,13 @@
   --color-main-text: var(--text);
   --color-heading: var(--text-h);
   --color-ui-border: var(--border);
+  --color-form-bg: var(--form-bg);
 
   --font-sans: var(--sans);
   --font-mono: var(--mono);
 }
 
 @layer base {
-  /* This makes the theme automatic for the whole site */
   html,
   body {
     @apply bg-main-bg text-main-text transition-colors duration-300;
@@ -59,7 +59,7 @@ form input::placeholder {
   --accent: #aa3bff;
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
-  --nav-bg: #f5eeff; /* light purple tint, fully opaque */
+  --nav-bg: #f5eeff;
 
   --sans: system-ui, sans-serif;
   --mono: ui-monospace, monospace;
@@ -82,7 +82,7 @@ form input::placeholder {
   --accent: #c084fc;
   --accent-bg: rgba(192, 132, 252, 0.15);
   --accent-border: rgba(192, 132, 252, 0.5);
-  --nav-bg: #1e1a2e; /* dark purple tint, fully opaque */
+  --nav-bg: #1e1a2e;
 
   --form-bg: #1f2937;
   --input-bg: #374151;
@@ -299,7 +299,7 @@ form input:-webkit-autofill:focus {
   border-radius: 4px;
 }
 
-/* Optional: Add a subtle gradient fade at carousel edges on desktop */
+/* Add a subtle gradient fade at carousel edges on desktop */
 @media (min-width: 768px) {
   .carousel-container::before,
   .carousel-container::after {
@@ -338,20 +338,16 @@ form input:-webkit-autofill:focus {
 
 .scrollbar-themed::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
-  /* margin creates a 'stop' so it doesn't hit the rounded corners */
   margin: 4px;
 }
 
 .scrollbar-themed::-webkit-scrollbar-thumb {
-  /* 1. Base color from theme token */
   background-color: var(--scrollbar-thumb);
 
-  /* 2. The 'Inset' look to prevent corner leaking */
   border: 3px solid transparent;
   background-clip: content-box;
   border-radius: 10px;
 
-  /* 3. Smooth transition for hover effects */
   transition: background-color 0.2s ease;
 }
 
@@ -359,13 +355,35 @@ form input:-webkit-autofill:focus {
   background-color: var(--scrollbar-thumb-hover);
 }
 
-/* Specific Dark Mode refinement */
 .dark .scrollbar-themed::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-thumb);
   filter: brightness(1.2);
 }
 
-/* Ensure the horizontal scrollbar (if any) also respects the theme */
 .scrollbar-themed::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+/* --- CART LOADING ANIMATIONS --- */
+@keyframes subtle-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.updating {
+  animation: subtle-pulse 0.6s ease-in-out infinite;
 }
