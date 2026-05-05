@@ -70,17 +70,19 @@ const DishManager = () => {
 
   const handleCreateDish = async (values: DishRequest) => {
     try {
-      const formData = new FormData();
-      formData.append(
-        "dish",
-        new Blob([JSON.stringify(values.dish)], { type: "application/json" }),
-      );
+      const requestBody = values.image
+        ? (() => {
+            const formData = new FormData();
+            formData.append(
+              "dish",
+              new Blob([JSON.stringify(values.dish)], { type: "application/json" }),
+            );
+            formData.append("image", values.image);
+            return formData;
+          })()
+        : values.dish;
 
-      if (values.image) {
-        formData.append("image", values.image);
-      }
-
-      const response = await api.post<DishResponse>("/dishes", formData);
+      const response = await api.post<DishResponse>("/dishes", requestBody);
       setDishes((prev) => [...prev, response]);
       setError(null);
     } catch {
@@ -90,27 +92,31 @@ const DishManager = () => {
 
   const handleUpdateDish = async (dishId: string, values: DishRequest) => {
     try {
-      const formData = new FormData();
-      formData.append(
-        "dish",
-        new Blob([JSON.stringify(values.dish)], { type: "application/json" }),
+      const requestBody = values.image
+        ? (() => {
+            const formData = new FormData();
+            formData.append(
+              "dish",
+              new Blob([JSON.stringify(values.dish)], { type: "application/json" }),
+            );
+            formData.append("image", values.image);
+            return formData;
+          })()
+        : values.dish;
+
+      const response = await api.put<DishResponse>(`/dishes/${dishId}`, requestBody);
+
+      setDishes((current) =>
+        current.map((dish) => (dish.id === dishId ? response : dish)),
       );
 
-      if (values.image) {
-        formData.append("image", values.image);
+      if (response && response.id) {
+        setImageUrls((prev) => ({
+          ...prev,
+          [response.id]: response.imageUrl ?? prev[response.id] ?? "",
+        }));
       }
 
-      await api.put<DishResponse>(`/dishes/${dishId}`, formData);
-      setDishes((current) =>
-        current.map((dish) =>
-          dish.id === dishId
-            ? {
-                ...dish,
-                ...values.dish,
-              }
-            : dish,
-        ),
-      );
       setError(null);
     } catch {
       setError("Failed to update dish");
@@ -191,6 +197,8 @@ const DishManager = () => {
                   ? Array.from(new Set(item.ingredientNames))
                   : item.ingredientNames,
                 price: item.price,
+                // send the raw imageUrl from the dish data (no cached/rewritten URL)
+                imageUrl: item.imageUrl ?? "",
               },
             }}
             onSubmit={(values) => {

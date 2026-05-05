@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import type { DishRequest, IngredientResponse } from "../types";
+import type { DishRequest, DishData, IngredientResponse } from "../types";
 import { formatName, namePattern, nameTitle } from "../utils/nameFormatting.ts";
 
 type DishEditModalProps = {
@@ -29,13 +29,18 @@ export const DishEditModal = ({
     const parsedPrice = Number(price);
     if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) return;
 
-    const payload: DishRequest = {
-      dish: {
-        name: formatName(name),
-        ingredientNames,
-        price: parsedPrice,
-      },
+    const dishPayload: DishData = {
+      name: formatName(name),
+      ingredientNames,
+      price: parsedPrice,
     };
+
+    // If no new image file selected, include the existing image URL so backend can preserve it
+    if (!image && initialValues.dish.imageUrl) {
+      dishPayload.imageUrl = initialValues.dish.imageUrl;
+    }
+
+    const payload: DishRequest = { dish: dishPayload };
 
     if (image) {
       payload.image = image;
