@@ -58,3 +58,10 @@ export const formatName = (value: string) => {
     })
     .join(" ");
 };
+
+export const getImageNameFromUrl = (value: string) => {
+  const lastSegment = value.split("/").pop() ?? value;
+  const namePart = lastSegment.split("-").pop() ?? lastSegment;
+
+  return namePart || "Existing image";
+};

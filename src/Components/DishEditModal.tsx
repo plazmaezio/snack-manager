@@ -1,6 +1,11 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import type { DishRequest, DishData, IngredientResponse } from "../types";
-import { formatName, namePattern, nameTitle } from "../utils/nameFormatting.ts";
+import {
+  formatName,
+  getImageNameFromUrl,
+  namePattern,
+  nameTitle,
+} from "../utils/nameFormatting.ts";
 
 type DishEditModalProps = {
   initialValues: DishRequest;
@@ -22,7 +27,25 @@ export const DishEditModal = ({
   );
   const [price, setPrice] = useState(String(initialValues.dish.price));
   const [image, setImage] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setImage(event.target.files?.[0] ?? null);
+    setRemoveImage(false);
+  };
+
+  const openImagePicker = () => {
+    if (!imageInputRef.current) return;
+    imageInputRef.current.value = "";
+    imageInputRef.current.click();
+  };
+
+  const handleRemoveImage = () => {
+    setImage(null);
+    setRemoveImage(true);
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,7 +59,7 @@ export const DishEditModal = ({
     };
 
     // If no new image file selected, include the existing image URL so backend can preserve it
-    if (!image && initialValues.dish.imageUrl) {
+    if (!image && initialValues.dish.imageUrl && !removeImage) {
       dishPayload.imageUrl = initialValues.dish.imageUrl;
     }
 
@@ -110,25 +133,19 @@ export const DishEditModal = ({
 
           {/* suggestions */}
           <div className="mb-3 rounded-2xl overflow-hidden">
-            <div className="max-h-40 overflow-y-auto scrollbar-themed p-4">
-              <div className="flex flex-wrap gap-2">
+            <div className="overflow-x-auto overflow-y-hidden scrollbar-themed p-4">
+              <div className="flex flex-nowrap gap-2 whitespace-nowrap">
                 {availableIngredients
                   .filter((a) => !ingredientNames.includes(a.name))
                   .filter((a) =>
                     ingredientInput ? a.name.toLowerCase().includes(ingredientInput.toLowerCase()) : true,
                   )
-                  .slice(0, 3)
                   .map((a) => (
                 <button
                   key={a.id}
                   type="button"
                   onClick={() => addIngredient(a.name)}
-                  className="rounded-full py-2 px-3 text-sm font-medium transition"
-                  style={{
-                    backgroundColor: "var(--input-bg)",
-                    color: "var(--text-h)",
-                    border: "1px solid var(--ui-border)",
-                  }}
+                  className="shrink-0 rounded-full py-2 px-3 text-sm font-medium transition border border-green-500/40 bg-green-500/10 text-green-700 hover:bg-green-500/20 hover:border-green-500/60 dark:text-green-300"
                 >
                   {a.name}
                 </button>
@@ -150,12 +167,7 @@ export const DishEditModal = ({
                     onClick={() =>
                       setIngredientNames((prev) => prev.filter((i) => i !== ingredient))
                     }
-                    className="rounded-full py-2.5 px-5 text-sm font-medium transition"
-                    style={{
-                      backgroundColor: "var(--input-bg)",
-                      color: "var(--text-h)",
-                      border: "1px solid var(--ui-border)",
-                    }}
+                    className="rounded-full py-2.5 px-5 text-sm font-medium transition border border-red-500/40 bg-red-500/10 text-red-600 hover:bg-red-500/20 hover:border-red-500/60 dark:text-red-300"
                   >
                     {ingredient}
                   </button>
@@ -163,6 +175,15 @@ export const DishEditModal = ({
               </div>
             </div>
           </div>
+          {ingredientNames.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setIngredientNames([])}
+              className="mb-4 w-full rounded-full border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-500/20 dark:text-red-300"
+            >
+              Clear all ingredients
+            </button>
+          )}
 
           <label
             htmlFor="dish-price"
@@ -195,22 +216,64 @@ export const DishEditModal = ({
             Image
           </label>
           <input
-            id="dish-image"
+            ref={imageInputRef}
             type="file"
             accept="image/*"
-            onChange={(event) => setImage(event.target.files?.[0] ?? null)}
-            className="mb-2 w-full rounded-full border border-ui-border bg-(--input-bg) px-4 py-2.5 text-main-text outline-none transition focus:border-brand"
+            onChange={handleImageChange}
+            className="hidden"
           />
-          <p className="mb-4 text-xs text-main-text/70">
-            Leave empty to keep the current image.
-          </p>
+          {!image && !removeImage && !initialValues.dish.imageUrl && (
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={openImagePicker}
+                className="rounded-full py-2.5 px-5 text-sm font-medium transition flex-1 cursor-pointer truncate bg-input-bg text-main-text border border-ui-border"
+              >
+                Add image
+              </button>
+            </div>
+          )}
+          {image ? (
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={openImagePicker}
+                className="rounded-full py-2.5 px-5 text-sm font-medium transition flex-1 cursor-pointer truncate bg-input-bg text-main-text border border-ui-border hover:border-brand hover:text-brand"
+              >
+              </button>
+              <button
+                type="button"
+                onClick={() => setImage(null)}
+                className="rounded-full py-2.5 px-5 text-sm font-medium transition flex-1 border border-red-500/40 bg-red-500/10 text-red-600 hover:bg-red-500/15 dark:text-red-300"
+              >
+                Remove
+              </button>
+            </div>
+          ) : initialValues.dish.imageUrl && !removeImage ? (
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={openImagePicker}
+                className="rounded-full py-2.5 px-5 text-sm font-medium transition flex-1 cursor-pointer truncate bg-input-bg text-main-text border border-ui-border hover:border-brand hover:text-brand"
+              >
+                {getImageNameFromUrl(initialValues.dish.imageUrl)}
+              </button>
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="rounded-full py-2.5 px-5 text-sm font-medium transition flex-1 border border-red-500/40 bg-red-500/10 text-red-600 hover:bg-red-500/15 dark:text-red-300"
+              >
+                Remove
+              </button>
+            </div>
+          ) : null}
         </div>
 
         <div className="mt-6 flex flex-col gap-3 bg-main-bg pt-2 sm:flex-row">
           <button
             type="button"
             onClick={onClose}
-            className="w-full rounded-full border border-ui-border bg-(--input-bg) px-5 py-2.5 text-sm font-medium text-main-text transition hover:border-brand hover:text-brand"
+            className="w-full rounded-full border border-ui-border bg-input-bg px-5 py-2.5 text-sm font-medium text-main-text transition hover:border-brand hover:text-brand"
           >
             Close
           </button>
