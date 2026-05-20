@@ -8,6 +8,7 @@ interface MobileMenuProps {
   user: UserResponse | null;
   cartItems: CartItem[];
   cartTotal: number;
+  totalQuantity: number;
   onClose: () => void;
   onLogin: () => void;
   onLogout: () => void;
@@ -16,15 +17,15 @@ interface MobileMenuProps {
 const MobileMenu = ({
   isOpen,
   user,
-  cartItems,
   cartTotal,
+  totalQuantity,
   onClose,
   onLogin,
   onLogout,
 }: MobileMenuProps) => {
-  if (!isOpen) return null;
-
   const navigate = useNavigate();
+
+  if (!isOpen) return null;
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -39,12 +40,15 @@ const MobileMenu = ({
 
         {/* Cart Mobile */}
         {user && (
-          <button className="w-full text-left px-4 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors flex items-center gap-2">
+          <button
+            onClick={() => handleNavigation("/cart")}
+            className="w-full text-left px-4 py-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors flex items-center gap-2"
+          >
             <ShoppingCart className="w-4 h-4" />
-            <span>Cart - ${cartTotal.toFixed(2)}</span>
-            {cartItems.length > 0 && (
+            <span>Cart - {cartTotal.toFixed(2)}€</span>
+            {totalQuantity > 0 && (
               <span className="ml-2 bg-brand text-white text-xs font-bold rounded-full px-2 py-1">
-                {cartItems.length}
+                {totalQuantity}
               </span>
             )}
           </button>

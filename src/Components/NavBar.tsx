@@ -14,7 +14,7 @@ const NavBar = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
-  const { cartItems, cartTotal } = useCart();
+  const { cartItems, cartTotal, totalQuantity } = useCart();
 
   const handleLogin = () => {
     navigate("/login");
@@ -39,7 +39,11 @@ const NavBar = () => {
             {user && <NavLinks />}
 
             {user && (
-              <CartDropdown cartItems={cartItems} cartTotal={cartTotal} />
+              <CartDropdown
+                cartItems={cartItems}
+                cartTotal={cartTotal}
+                totalQuantity={totalQuantity}
+              />
             )}
 
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
@@ -54,7 +58,7 @@ const NavBar = () => {
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors"
+              className="relative p-2 bg-main-bg border border-ui-border rounded-md hover:border-brand transition-colors"
               aria-label="Toggle mobile menu"
             >
               <svg
@@ -70,6 +74,13 @@ const NavBar = () => {
                   d="M4 6h16M4 12h16M4 18h16"
                 />
               </svg>
+
+              {/* Badge indicating the number of items in the cart */}
+              {user && !isMobileMenuOpen && totalQuantity > 0 && (
+                <span className="absolute -top-1 -right-1 bg-brand text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-nav-bg">
+                  {totalQuantity}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -81,6 +92,7 @@ const NavBar = () => {
         user={user}
         cartItems={cartItems}
         cartTotal={cartTotal}
+        totalQuantity={totalQuantity}
         onClose={() => setIsMobileMenuOpen(false)}
         onLogin={handleLogin}
         onLogout={handleLogout}
