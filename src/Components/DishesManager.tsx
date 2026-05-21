@@ -84,6 +84,16 @@ const DishManager = () => {
 
       const response = await api.post<DishResponse>("/dishes", requestBody);
       setDishes((prev) => [...prev, response]);
+      // attempt to fetch the resolved image URL for the new dish and cache-bust it
+      try {
+        const res = (await api.get(`/dishes/${response.id}/image-url`)) as { url: string };
+        setImageUrls((prev) => ({
+          ...prev,
+          [response.id]: (res?.url ?? response.imageUrl ?? "") + "?cb=" + Date.now(),
+        }));
+      } catch {
+        // ignore image fetch errors
+      }
       setError(null);
     } catch {
       setError("Failed to create dish");
@@ -111,10 +121,24 @@ const DishManager = () => {
       );
 
       if (response && response.id) {
-        setImageUrls((prev) => ({
-          ...prev,
-          [response.id]: response.imageUrl ?? prev[response.id] ?? "",
-        }));
+        if (response.imageUrl) {
+          // backend returned an image URL — attach cache-buster to force reload
+          setImageUrls((prev) => ({
+            ...prev,
+            [response.id]: response.imageUrl + "?cb=" + Date.now(),
+          }));
+        } else if (values.image) {
+          // if we uploaded an image but backend didn't return a URL, try to fetch it
+          try {
+            const res = (await api.get(`/dishes/${response.id}/image-url`)) as { url: string };
+            setImageUrls((prev) => ({
+              ...prev,
+              [response.id]: (res?.url ?? prev[response.id] ?? "") + "?cb=" + Date.now(),
+            }));
+          } catch {
+            // ignore image fetch errors
+          }
+        }
       }
 
       setError(null);

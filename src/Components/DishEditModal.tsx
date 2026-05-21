@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import type { DishRequest, DishData, IngredientResponse } from "../types";
 import {
   formatName,
@@ -30,6 +30,7 @@ export const DishEditModal = ({
   const [removeImage, setRemoveImage] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
   const imageInputRef = useRef<HTMLInputElement | null>(null);
+
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     setImage(event.target.files?.[0] ?? null);
@@ -240,6 +241,7 @@ export const DishEditModal = ({
                 onClick={openImagePicker}
                 className="rounded-full py-2.5 px-5 text-sm font-medium transition flex-1 cursor-pointer truncate bg-input-bg text-main-text border border-ui-border hover:border-brand hover:text-brand"
               >
+                {image.name}
               </button>
               <button
                 type="button"
