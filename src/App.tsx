@@ -1,14 +1,14 @@
 import "./App.css";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import CreateAccount from "./pages/CreateAccount";
-import CartPreview from "./pages/CartPreview";
+import Home from "./features/menu/pages/Home";
+import Login from "./features/auth/pages/Login";
+import CreateAccount from "./features/auth/pages/CreateAccount";
+import CartPreview from "./features/cart/pages/CartPreview";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import NotFound from "./pages/NotFound";
-import ManageInventory from "./pages/ManageInventory";
-import NavBar from "./components/NavBar";
-import RoleRoute from "./components/RoleRoute";
-import ProtectedRoute from "./components/ProtectedRoute";
+import NotFound from "./features/errors/pages/NotFound";
+import ManageInventory from "./features/inventory/pages/ManageInventory";
+import NavBar from "./features/layout/components/NavBar";
+import ProtectedRoute from "./features/auth/components/ProtectedRoute";
+import RoleRoute from "./features/auth/components/RoleRoute";
 
 const App = () => {
   return (
