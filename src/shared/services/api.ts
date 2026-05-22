@@ -14,6 +14,13 @@ const getAuthHeader = () => {
   };
 };
 
+const getMultipartAuthHeader = () => {
+  const token = localStorage.getItem("jwt");
+  return {
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+};
+
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
     const errorData = await response.json();
@@ -34,18 +41,36 @@ export const api = {
     ),
 
   post: <T>(endpoint: string, body: unknown): Promise<T> =>
-    fetch(`${BASE_URL}${endpoint}`, {
-      method: "POST",
-      headers: getAuthHeader(),
-      body: JSON.stringify(body),
-    }).then(handleResponse),
+    fetch(
+      `${BASE_URL}${endpoint}`,
+      body instanceof FormData
+        ? {
+            method: "POST",
+            headers: getMultipartAuthHeader(),
+            body,
+          }
+        : {
+            method: "POST",
+            headers: getAuthHeader(),
+            body: JSON.stringify(body),
+          },
+    ).then(handleResponse),
 
   put: <T>(endpoint: string, body: unknown): Promise<T> =>
-    fetch(`${BASE_URL}${endpoint}`, {
-      method: "PUT",
-      headers: getAuthHeader(),
-      body: JSON.stringify(body),
-    }).then(handleResponse),
+    fetch(
+      `${BASE_URL}${endpoint}`,
+      body instanceof FormData
+        ? {
+            method: "PUT",
+            headers: getMultipartAuthHeader(),
+            body,
+          }
+        : {
+            method: "PUT",
+            headers: getAuthHeader(),
+            body: JSON.stringify(body),
+          },
+    ).then(handleResponse),
 
   delete: <T>(endpoint: string): Promise<T> =>
     fetch(`${BASE_URL}${endpoint}`, {

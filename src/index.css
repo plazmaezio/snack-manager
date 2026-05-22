@@ -10,6 +10,8 @@
   --color-heading: var(--text-h);
   --color-ui-border: var(--border);
   --color-form-bg: var(--form-bg);
+  --color-form-bg: var(--form-bg);
+  --color-input-bg: var(--input-bg);
 
   --font-sans: var(--sans);
   --font-mono: var(--mono);

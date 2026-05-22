@@ -1,10 +1,11 @@
-interface DishData {
+export interface DishData {
   /** * Dish name.
    * @pattern ^[A-Za-z\s]+$ (Letters and spaces only)
    */
   name: string;
   ingredientNames: string[];
   price: number;
+  imageUrl?: string;
 }
 
 export interface DishResponse extends DishData {
@@ -14,5 +15,5 @@ export interface DishResponse extends DishData {
 
 export interface DishRequest {
   dish: DishData;
-  imageUrl?: string;
+  image?: File | null;
 }
