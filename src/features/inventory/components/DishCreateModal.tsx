@@ -1,5 +1,5 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import type { DishRequest, IngredientResponse } from "../../../types";
+import type { DishRequest, IngredientResponse } from "../types";
 import { formatName, namePattern, nameTitle } from "../../../shared/utils/nameFormatting.ts";
 
 type DishCreateModalProps = {

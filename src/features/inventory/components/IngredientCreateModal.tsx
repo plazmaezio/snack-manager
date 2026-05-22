@@ -4,13 +4,8 @@ import {
   namePattern,
   nameTitle,
 } from "../../../shared/utils/nameFormatting";
-import {
-  ingredientAllergenOptions,
-  ingredientTypeOptions,
-  type IngredientAllergen,
-  type IngredientRequest,
-  type IngredientType,
-} from "../../../types";
+import { ingredientAllergenOptions, ingredientTypeOptions, type IngredientAllergen, type IngredientRequest, type IngredientType } from "../types";
+
 
 type IngredientCreateModalProps = {
   onSubmit: (values: IngredientRequest) => void;

@@ -1,5 +1,5 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import type { DishRequest, DishData, IngredientResponse } from "../../../types";
+import type { DishRequest, DishData, IngredientResponse } from "../types";
 import {
   formatName,
   getImageNameFromUrl,

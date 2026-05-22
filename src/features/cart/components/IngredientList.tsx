@@ -1,7 +1,7 @@
 import {
   ingredientAllergenOptions,
   type IngredientResponse,
-} from "../../../types";
+} from "../../inventory/types";
 
 interface IngredientListProps {
   ingredients: IngredientResponse[];

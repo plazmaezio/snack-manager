@@ -4,8 +4,7 @@ import { DishCreateModal } from "./DishCreateModal";
 import { DishEditModal } from "./DishEditModal";
 
 import { api } from "../../../shared/services/api";
-import type { DishRequest, DishResponse } from "../types/dish.types";
-import type { IngredientResponse } from "../types/ingredient.types";
+import type { DishRequest, DishResponse, IngredientResponse } from "../types";
 
 class DishModel implements DishResponse {
   id = "";

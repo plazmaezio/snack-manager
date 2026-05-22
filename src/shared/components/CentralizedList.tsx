@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { formatName } from "../utils/nameFormatting.ts";
 import type { UserResponse} from "../../features/auth/types";
-import type { DishResponse, IngredientResponse } from "../../types/index.ts";
+import type { DishResponse, IngredientResponse } from "../../features/inventory/types";
+
 type ClassTypes = DishResponse | UserResponse | IngredientResponse;
 
 type FieldFormatters<T> = Partial<{
