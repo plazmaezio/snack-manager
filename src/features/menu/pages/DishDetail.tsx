@@ -1,7 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { DishResponse } from "../../inventory/types";
-import { fetchDishesService } from "../../../shared/services/dishService";
+import type { DishResponse, IngredientResponse } from "../../inventory/types";
+import {
+  fetchDishesService,
+  fetchAndMapDishImages,
+} from "../../../shared/services/dishService";
+import { getIngredientsService } from "../../../shared/services/ingredientService";
+import { api } from "../../../shared/services/api";
+import { formatName } from "../../../shared/utils/nameFormatting";
 
 const DishDetail = () => {
   const { dishId } = useParams<{ dishId: string }>();
@@ -9,24 +15,38 @@ const DishDetail = () => {
   const [dish, setDish] = useState<DishResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [masterIngredients, setMasterIngredients] = useState<
+    IngredientResponse[]
+  >([]);
 
   useEffect(() => {
     document.title = "Dish Details - Snack Manager";
   }, []);
 
   useEffect(() => {
-    const fetchDish = async () => {
+    const fetchInitialData = async () => {
       try {
         setLoading(true);
-        const dishes = await fetchDishesService();
-        const foundDish = dishes.find((d) => d.id === dishId);
 
+        const [dishes, ingredientsData] = await Promise.all([
+          fetchDishesService(),
+          getIngredientsService(),
+        ]);
+
+        setMasterIngredients(ingredientsData);
+
+        const foundDish = dishes.find((d) => d.id === dishId);
         if (!foundDish) {
           setError("Dish not found");
           return;
         }
 
         setDish(foundDish);
+
+        const urlMap = await fetchAndMapDishImages([foundDish]);
+        setImageUrls(urlMap);
       } catch (err) {
         setError("Failed to load dish details");
         console.error(err);
@@ -35,8 +55,48 @@ const DishDetail = () => {
       }
     };
 
-    fetchDish();
+    if (dishId) {
+      fetchInitialData();
+    }
   }, [dishId]);
+
+  const dishAllergens = useMemo(() => {
+    if (!dish || !masterIngredients.length) return [];
+
+    const allergenMap = new Map<string, string>();
+    masterIngredients.forEach((ing) => {
+      if (ing.allergen) {
+        allergenMap.set(ing.name.toLowerCase(), ing.allergen);
+      }
+    });
+
+    const identifiedAllergens = new Set<string>();
+    dish.ingredientNames.forEach((name) => {
+      const match = allergenMap.get(name.toLowerCase());
+      if (match && match.toLowerCase() !== "none") {
+        identifiedAllergens.add(match);
+      }
+    });
+
+    return Array.from(identifiedAllergens);
+  }, [dish, masterIngredients]);
+
+  const handleAddToCart = async () => {
+    if (!dish) return;
+
+    try {
+      setIsSubmitting(true);
+      await api.post("/cart", {
+        dishId: dish.id,
+        quantity: 1,
+      });
+    } catch (err) {
+      console.error("Failed to add item to cart:", err);
+      alert("Could not add item to cart. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -71,6 +131,8 @@ const DishDetail = () => {
     );
   }
 
+  const finalImageUrl = imageUrls[dish.id] || dish.imageUrl;
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 min-h-[calc(100vh-80px)]">
       {/* Back Button */}
@@ -98,9 +160,9 @@ const DishDetail = () => {
         {/* Dish Image */}
         <div className="flex items-center justify-center">
           <div className="w-full aspect-square rounded-lg overflow-hidden bg-linear-to-br from-accent-bg to-form-bg shadow-lg">
-            {dish.imageUrl ? (
+            {finalImageUrl ? (
               <img
-                src={dish.imageUrl}
+                src={finalImageUrl}
                 alt={dish.name}
                 className="w-full h-full object-cover"
               />
@@ -126,63 +188,58 @@ const DishDetail = () => {
 
         {/* Dish Details */}
         <div className="flex flex-col justify-between">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-4xl sm:text-5xl font-bold text-heading mb-3">
-              {dish.name}
-            </h1>
-            <p className="text-3xl font-bold text-accent">
-              €{dish.price.toFixed(2)}
-            </p>
-          </div>
+          <div>
+            {/* Header */}
+            <div className="mb-6">
+              <h1 className="text-4xl sm:text-5xl font-bold text-heading mb-3">
+                {formatName(dish.name)}
+              </h1>
+              <p className="text-3xl font-bold text-accent">
+                €{dish.price.toFixed(2)}
+              </p>
+            </div>
 
-          {/* Ingredients */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-heading mb-4">
-              Ingredients
-            </h2>
-            <div className="space-y-2">
-              {dish.ingredientNames.map((ingredient, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-3 p-3 bg-accent-bg rounded-lg border border-accent-border"
-                >
-                  <svg
-                    className="w-5 h-5 text-accent shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-heading font-medium">{ingredient}</span>
+            {/* List 1: Ingredients */}
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-heading mb-3">
+                Ingredients
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {dish.ingredientNames.map((ingredient, idx) => (
+                  <span key={idx} className="badge-ingredient">
+                    {formatName(ingredient)}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* List 2: Allergens */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-heading mb-3">Allergens</h2>
+              {dishAllergens.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {dishAllergens.map((allergen, idx) => (
+                    <span key={idx} className="badge-allergen">
+                      {formatName(allergen)}
+                    </span>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <p className="text-sm text-main-text opacity-70 italic">
+                  No known allergens identified.
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Add to Cart Button */}
-          <div className="flex gap-3">
-            <button className="flex-1 px-6 py-3 bg-accent text-white rounded-lg font-bold text-lg hover:opacity-90 transition-opacity">
-              Add to Cart
-            </button>
-            <button className="px-6 py-3 bg-form-bg border border-ui-border text-heading rounded-lg font-bold hover:bg-accent-bg transition-colors">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
+          {/* Add to Cart Actions */}
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={handleAddToCart}
+              disabled={isSubmitting}
+              className="flex-1 px-6 py-3 bg-accent text-white rounded-lg font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Adding..." : "Add to Cart"}
             </button>
           </div>
         </div>
