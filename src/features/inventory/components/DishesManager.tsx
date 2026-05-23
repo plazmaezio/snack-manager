@@ -5,6 +5,11 @@ import { DishEditModal } from "./DishEditModal";
 
 import { api } from "../../../shared/services/api";
 import type { DishRequest, DishResponse, IngredientResponse } from "../types";
+import {
+  fetchAndMapDishImages,
+  fetchDishesService,
+} from "../../../shared/services/dishService";
+import { getIngredientsService } from "../../../shared/services/ingredientService";
 
 class DishModel implements DishResponse {
   id = "";
@@ -17,56 +22,43 @@ class DishModel implements DishResponse {
 const DishManager = () => {
   const [dishes, setDishes] = useState<DishResponse[]>([]);
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
-  const [availableIngredients, setAvailableIngredients] = useState<IngredientResponse[]>([]);
+  const [availableIngredients, setAvailableIngredients] = useState<
+    IngredientResponse[]
+  >([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  const fetchDishes = async () => {
+    try {
+      const data: DishResponse[] = await fetchDishesService();
+      setDishes(data);
+      const urlMap = await fetchAndMapDishImages(data);
+      setImageUrls(urlMap);
+    } catch (e) {
+      setErrors((prev) => [...prev, "Failed to load dishes data."]);
+    }
+  };
+
+  const fetchIngredients = async () => {
+    try {
+      const data = await getIngredientsService();
+      setAvailableIngredients(data ?? []);
+    } catch (e) {
+      setErrors((prev) => [...prev, "Failed to load ingredients inventory."]);
+    }
+  };
+
+  const loadAllInitialData = async () => {
+    setLoading(true);
+    setErrors([]);
+
+    await Promise.all([fetchDishes(), fetchIngredients()]);
+
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchDishes = async () => {
-      setLoading(true);
-      try {
-        const data = (await api.get("/dishes")) as DishResponse[];
-        setDishes(data);
-
-        // fetch image URLs for each dish
-        try {
-          const entries = await Promise.all(
-            data.map(async (d) => {
-              try {
-                const res = (await api.get(
-                  `/dishes/${d.id}/image-url`,
-                )) as { url: string };
-                const url = res?.url ?? d.imageUrl ?? "";
-                return [d.id, url] as const;
-              } catch {
-                return [d.id, d.imageUrl ?? ""] as const;
-              }
-            }),
-          );
-
-          setImageUrls(Object.fromEntries(entries));
-        } catch {
-          // ignore image fetching errors
-        }
-      } catch (e) {
-        setError("Failed to load dishes");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDishes();
-
-    const fetchIngredients = async () => {
-      try {
-        const data = (await api.get("/ingredients")) as IngredientResponse[];
-        setAvailableIngredients(data ?? []);
-      } catch {
-        // ignore ingredient fetch errors
-      }
-    };
-
-    fetchIngredients();
+    loadAllInitialData();
   }, []);
 
   const handleCreateDish = async (values: DishRequest) => {
@@ -76,7 +68,9 @@ const DishManager = () => {
             const formData = new FormData();
             formData.append(
               "dish",
-              new Blob([JSON.stringify(values.dish)], { type: "application/json" }),
+              new Blob([JSON.stringify(values.dish)], {
+                type: "application/json",
+              }),
             );
             formData.append("image", values.image);
             return formData;
@@ -85,20 +79,23 @@ const DishManager = () => {
 
       const response = await api.post<DishResponse>("/dishes", requestBody);
       setDishes((prev) => [...prev, response]);
-      // attempt to fetch the resolved image URL for the new dish and cache-bust it
+
       try {
-        const res = (await api.get(`/dishes/${response.id}/image-url`)) as { url: string };
+        const res = (await api.get(`/dishes/${response.id}/image-url`)) as {
+          url: string;
+        };
         setImageUrls((prev) => ({
           ...prev,
-          [response.id]: (res?.url ?? response.imageUrl ?? "") + "?cb=" + Date.now(),
+          [response.id]:
+            (res?.url ?? response.imageUrl ?? "") + "?cb=" + Date.now(),
         }));
       } catch {
         // ignore image fetch errors
       }
-      setError(null);
+      setErrors([]);
       window.location.reload();
     } catch {
-      setError("Failed to create dish");
+      setErrors((prev) => [...prev, "Failed to create dish."]);
     }
   };
 
@@ -109,14 +106,19 @@ const DishManager = () => {
             const formData = new FormData();
             formData.append(
               "dish",
-              new Blob([JSON.stringify(values.dish)], { type: "application/json" }),
+              new Blob([JSON.stringify(values.dish)], {
+                type: "application/json",
+              }),
             );
             formData.append("image", values.image);
             return formData;
           })()
         : values.dish;
 
-      const response = await api.put<DishResponse>(`/dishes/${dishId}`, requestBody);
+      const response = await api.put<DishResponse>(
+        `/dishes/${dishId}`,
+        requestBody,
+      );
 
       setDishes((current) =>
         current.map((dish) => (dish.id === dishId ? response : dish)),
@@ -124,18 +126,19 @@ const DishManager = () => {
 
       if (response && response.id) {
         if (response.imageUrl) {
-          // backend returned an image URL — attach cache-buster to force reload
           setImageUrls((prev) => ({
             ...prev,
             [response.id]: response.imageUrl + "?cb=" + Date.now(),
           }));
         } else if (values.image) {
-          // if we uploaded an image but backend didn't return a URL, try to fetch it
           try {
-            const res = (await api.get(`/dishes/${response.id}/image-url`)) as { url: string };
+            const res = (await api.get(`/dishes/${response.id}/image-url`)) as {
+              url: string;
+            };
             setImageUrls((prev) => ({
               ...prev,
-              [response.id]: (res?.url ?? prev[response.id] ?? "") + "?cb=" + Date.now(),
+              [response.id]:
+                (res?.url ?? prev[response.id] ?? "") + "?cb=" + Date.now(),
             }));
           } catch {
             // ignore image fetch errors
@@ -143,10 +146,10 @@ const DishManager = () => {
         }
       }
 
-      setError(null);
+      setErrors([]);
       window.location.reload();
     } catch {
-      setError("Failed to update dish");
+      setErrors((prev) => [...prev, "Failed to update dish."]);
     }
   };
 
@@ -154,9 +157,9 @@ const DishManager = () => {
     try {
       await Promise.all(ids.map((id) => api.delete(`/dishes/${id}`)));
       setDishes((prev) => prev.filter((dish) => !ids.includes(dish.id)));
-      setError(null);
+      setErrors([]);
     } catch {
-      setError("Failed to delete dishes");
+      setErrors((prev) => [...prev, "Failed to delete dishes."]);
     }
   };
 
@@ -169,13 +172,15 @@ const DishManager = () => {
 
   return (
     <div className="space-y-8">
-      {(loading || error) && (
-        <div className="rounded-2xl border border-ui-border bg-(--input-bg) px-4 py-3 text-sm text-main-text">
-          {loading && <span>Loading dishes...</span>}
-          {error && (
-            <span className={loading ? "ml-3 text-red-500" : "text-red-500"}>
-              {error}
-            </span>
+      {(loading || errors.length > 0) && (
+        <div className="rounded-2xl border border-ui-border bg-(--input-bg) px-4 py-3 text-sm text-main-text space-y-1">
+          {loading && <div>Loading dishes and inventory dependencies...</div>}
+          {errors.length > 0 && (
+            <ul className="list-disc list-inside text-red-500 space-y-0.5">
+              {errors.map((err, index) => (
+                <li key={index}>{err}</li>
+              ))}
+            </ul>
           )}
         </div>
       )}
@@ -191,7 +196,7 @@ const DishManager = () => {
             Array.isArray(value) ? value.join(", ") : String(value),
           imageUrl: (_value, item) => {
             const src = imageUrls[item.id] || item.imageUrl || "";
-          
+
             if (!src) {
               return <div className="h-12 w-12 rounded bg-ui-border" />;
             }
@@ -224,7 +229,6 @@ const DishManager = () => {
                   ? Array.from(new Set(item.ingredientNames))
                   : item.ingredientNames,
                 price: item.price,
-                // send the raw imageUrl from the dish data (no cached/rewritten URL)
                 imageUrl: item.imageUrl ?? "",
               },
             }}
