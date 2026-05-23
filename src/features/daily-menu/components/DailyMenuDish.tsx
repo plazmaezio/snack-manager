@@ -1,4 +1,4 @@
-import type { DishResponse } from "../../../types";
+import type { DishResponse } from "../../inventory/types";
 import { MENU_DISCOUNT } from "../config/dailyMenu";
 
 interface DailyMenuDishProps {

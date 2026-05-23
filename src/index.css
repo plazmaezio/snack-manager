@@ -41,6 +41,82 @@
   }
 }
 
+@layer components {
+  /* Color utility classes for consistent theme usage */
+  .bg-main-bg {
+    @apply bg-(--bg);
+  }
+
+  .bg-form-bg {
+    @apply bg-(--form-bg);
+  }
+
+  .bg-accent-bg {
+    @apply bg-(--accent-bg);
+  }
+
+  .bg-nav-bg {
+    @apply bg-(--nav-bg);
+  }
+
+  .bg-accent {
+    @apply bg-(--accent);
+  }
+
+  .text-main-text {
+    @apply text-(--text);
+  }
+
+  .text-heading {
+    @apply text-(--text-h);
+  }
+
+  .text-accent {
+    @apply text-(--accent);
+  }
+
+  .border-ui-border {
+    @apply border-(--ui-border);
+  }
+
+  .border-accent-border {
+    @apply border-(--accent-border);
+  }
+
+  /* Input styling */
+  .input-base {
+    @apply bg-(--input-bg) border border-(--ui-border) text-(--text-h);
+  }
+
+  /* Card styling */
+  .card-base {
+    @apply bg-form-bg border border-ui-border rounded-lg shadow-md;
+  }
+
+  .card-hover {
+    @apply card-base hover:shadow-lg transition-shadow duration-300;
+  }
+
+  /* Badge styling */
+  .badge-accent {
+    @apply inline-block px-3 py-1 bg-accent-bg text-accent border border-accent-border rounded-full text-sm font-medium;
+  }
+
+  /* Button styling */
+  .btn-primary {
+    @apply px-4 py-2 bg-accent text-white rounded-lg font-semibold hover:opacity-90 transition-opacity;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-form-bg border border-ui-border text-heading rounded-lg font-semibold hover:bg-accent-bg transition-colors;
+  }
+
+  /* Focus states for accessibility */
+  .focus-accent {
+    @apply focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent;
+  }
+}
+
 /* Form inputs — outside @layer to beat browser default specificity */
 form input {
   background-color: var(--input-bg);
