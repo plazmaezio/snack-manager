@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import WeeklyMenu from "../components/WeeklyMenu";
+import WeeklyMenu from "./components/WeeklyMenu";
 import { Link } from "react-router-dom";
 
 const Home = () => {

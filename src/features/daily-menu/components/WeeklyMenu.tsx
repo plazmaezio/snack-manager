@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../../shared/services/api";
-import type { DishResponse } from "../../../types";
 import DailyMenuContainer from "./DailyMenuContainer";
+import type { DishResponse } from "../../inventory/types";
 
 const WeeklyMenu = () => {
   const DAYS = [
