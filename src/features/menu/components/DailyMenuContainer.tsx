@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import type { DailyMenuResponse, DishResponse } from "../../../types";
+import type { DailyMenuResponse} from "../types";
+
 import { api } from "../../../shared/services/api";
 import DailyMenuDish from "./DailyMenuDish";
 import { MENU_DISCOUNT } from "../config/dailyMenu";
 import { useCart } from "../../cart/contexts/CartContext";
+import type { DishResponse } from "../../inventory/types";
 
 interface DailyMenuProps {
   day: string;

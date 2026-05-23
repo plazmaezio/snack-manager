@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import CentralizedList from "../../../shared/components/CentralizedList";
 import { MenuCreateModal } from "./MenuCreateModal";
 import { MenuEditModal } from "./MenuEditModal";
-import { api } from "../../../shared/services/api";
 import type { DailyMenuResponse, DailyMenuRequest } from "../../menu/types/menu.types.ts";
+import {
+  createMenuService,
+  deleteMenuService,
+  fetchMenusService,
+  updateMenuService,
+} from "../services/MenuService.ts";
 
 class MenuModel implements DailyMenuResponse {
   id = "";
@@ -22,7 +27,7 @@ const MenusManager = () => {
     const fetchMenus = async () => {
       setLoading(true);
       try {
-        const data = (await api.get("/menus")) as DailyMenuResponse[];
+        const data = await fetchMenusService();
         setMenus(data);
       } catch (e) {
         setError("Failed to load menus");
@@ -36,7 +41,7 @@ const MenusManager = () => {
 
   const handleCreate = async (values: DailyMenuRequest) => {
     try {
-      const response = (await api.post("/menus", values)) as DailyMenuResponse;
+      const response = await createMenuService(values);
       setMenus((prev) => [...prev, response]);
       setError(null);
     } catch (e) {
@@ -44,11 +49,11 @@ const MenusManager = () => {
     }
   };
 
-  const handleUpdate = (id: string, values: DailyMenuRequest) => {
+  const handleUpdate = async (id: string, values: DailyMenuRequest) => {
     try {
-      api.put(`/menus/${id}`, values);
+      const updatedMenu = await updateMenuService(id, values);
       setMenus((current: DailyMenuResponse[]) =>
-        current.map((m) => (m.id === id ? { ...m, ...values } : m)),
+        current.map((m) => (m.id === id ? updatedMenu : m)),
       );
       setError(null);
     } catch (e) {
@@ -58,7 +63,7 @@ const MenusManager = () => {
 
   const handleDelete = async (ids: string[]) => {
     try {
-      await Promise.all(ids.map((id) => api.delete(`/menus/${id}`)));
+      await Promise.all(ids.map((id) => deleteMenuService(id)));
       setMenus((prev) => prev.filter((m) => !ids.includes(m.id)));
       setError(null);
     } catch (e) {
