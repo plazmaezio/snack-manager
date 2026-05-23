@@ -10,7 +10,7 @@ import {
   type IngredientAllergen,
   type IngredientRequest,
   type IngredientType,
-} from "../../../types";
+} from "../types";
 
 type IngredientEditModalProps = {
   initialValues: IngredientRequest;

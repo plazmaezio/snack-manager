@@ -4,13 +4,14 @@ import { IngredientCreateModal } from "../components/IngredientCreateModal";
 import { IngredientEditModal } from "../components/IngredientEditModal";
 import { api } from "../../../shared/services/api";
 import {
+ 
   ingredientAllergenOptions,
   ingredientTypeOptions,
   type IngredientAllergen,
   type IngredientRequest,
   type IngredientResponse,
   type IngredientType,
-} from "../../../types";
+} from "../types";
 
 class IngredientModel implements IngredientResponse {
   id = "";

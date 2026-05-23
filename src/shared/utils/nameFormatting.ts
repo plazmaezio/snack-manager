@@ -58,3 +58,23 @@ export const formatName = (value: string) => {
     })
     .join(" ");
 };
+
+export const getImageNameFromUrl = (value: string) => {
+  const lastSegment = value.split("dishes/").slice(1) ?? value;
+  
+  const checkedLastSegment = lastSegment.length > 1 ? lastSegment.join("dishes/") : lastSegment[0];
+  
+  const parts = checkedLastSegment.split("-");
+
+  let namePart: string | undefined;
+
+  // If there are more than 5 hyphen-separated parts, take everything after the 5th hyphen
+  if (parts.length > 5) {
+    namePart = parts.slice(5).join("-");
+  } else {
+    // Fallback to the last hyphen-separated segment (existing behavior)
+    namePart = parts.pop() ?? checkedLastSegment;
+  }
+
+  return namePart || "Existing image";
+};

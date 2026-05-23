@@ -1,13 +1,14 @@
 import React, { useState, useMemo } from "react";
-import type { DishResponse, IngredientResponse } from "../../types";
-import type { UserResponse } from "../../features/auth/types";
+import { formatName } from "../utils/nameFormatting.ts";
+import type { UserResponse} from "../../features/auth/types";
+import type { DishResponse, IngredientResponse } from "../../features/inventory/types";
 
 type ClassTypes = DishResponse | UserResponse | IngredientResponse;
 
 type FieldFormatters<T> = Partial<{
-  [K in keyof T]: (value: T[K], item: T) => string;
-}>;
-
+  [K in keyof T]: (value: T[K], item: T) => React.ReactNode;
+}>
+;       
 interface CentralizedListProps<T extends ClassTypes> {
   data: T[];
   model: new (...args: any[]) => T;
@@ -52,6 +53,12 @@ const CentralizedList = <T extends ClassTypes>({
 
     return Array.from(fieldNames).filter((field) => field !== "id");
   }, [data]);
+
+  const humanizeField = (field: string) =>
+    formatName(
+      // split camelCase and underscores into words before formatting
+      field.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " "),
+    );
 
   const processedData = useMemo(() => {
     let result = [...data];
@@ -131,10 +138,10 @@ const CentralizedList = <T extends ClassTypes>({
   const handleOpenEdit = (item: T) => setEditingItem(item);
   const handleCloseEdit = () => setEditingItem(null);
 
-  const getDisplayValue = (item: T, field: keyof T) => {
+  const getDisplayValue = (item: T, field: keyof T): React.ReactNode => {
     const rawValue = item[field];
     const formatter = fieldFormatters?.[field] as
-      | ((value: T[keyof T], item: T) => string)
+      | ((value: T[keyof T], item: T) => React.ReactNode)
       | undefined;
 
     if (formatter) {
@@ -173,7 +180,7 @@ const CentralizedList = <T extends ClassTypes>({
               onClick={() => handleSortFieldChange(field)}
               className="rounded-full border border-ui-border bg-(--input-bg) px-4 py-2 text-sm font-medium text-main-text transition hover:border-brand hover:text-brand"
             >
-              {String(field)}
+              {humanizeField(String(field))}
               {sortField === field
                 ? sortDirection === "asc"
                   ? " ▲"
@@ -221,7 +228,7 @@ const CentralizedList = <T extends ClassTypes>({
                       key={field}
                       className="px-4 py-3 font-semibold capitalize"
                     >
-                      {field}
+                      {humanizeField(field)}
                     </th>
                   ))}
                   <th className="w-32 px-4 py-3 font-semibold">Actions</th>
@@ -266,14 +273,18 @@ const CentralizedList = <T extends ClassTypes>({
                                 field as keyof T,
                               );
 
-                              return (
-                                <span
-                                  className="block truncate text-main-text"
-                                  title={displayValue}
-                                >
-                                  {displayValue}
-                                </span>
-                              );
+                              if (typeof displayValue === "string") {
+                                return (
+                                  <span
+                                    className="block truncate text-main-text"
+                                    title={displayValue}
+                                  >
+                                    {displayValue}
+                                  </span>
+                                );
+                              }
+
+                              return <>{displayValue}</>;
                             })()}
                           </td>
                         ))}
