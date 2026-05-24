@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { formatName } from "../utils/nameFormatting.ts";
-import type { UserResponse} from "../../features/auth/types";
+import type { UserResponse } from "../../features/auth/types";
 import type { DishResponse, IngredientResponse } from "../../features/inventory/types";
-import type { DailyMenuResponse } from "../../features/daily-menu/types/menu.types.ts";
+import type { DailyMenuResponse } from "../../features/daily-menu/types";
 
 type ClassTypes = DishResponse | UserResponse | IngredientResponse | DailyMenuResponse;
 
@@ -17,6 +17,7 @@ interface CentralizedListProps<T extends ClassTypes> {
   defaultSortField?: keyof T;
   searchFields: (keyof T)[];
   fieldFormatters?: FieldFormatters<T>;
+  onCreate?: () => void;
   renderCreateModal: (onClose: () => void) => React.ReactNode;
   renderEditModal: (item: T, onClose: () => void) => React.ReactNode;
   onDelete: (ids: string[]) => void;
@@ -30,6 +31,7 @@ const CentralizedList = <T extends ClassTypes>({
   defaultSortField,
   searchFields,
   fieldFormatters,
+  onCreate,
   renderCreateModal,
   renderEditModal,
   onDelete,
@@ -133,7 +135,14 @@ const CentralizedList = <T extends ClassTypes>({
     setSelectedIds(new Set());
   };
 
-  const handleOpenCreate = () => setIsCreateModalOpen(true);
+  const handleOpenCreate = () => {
+    if (onCreate) {
+      onCreate();
+      return;
+    }
+
+    setIsCreateModalOpen(true);
+  };
   const handleCloseCreate = () => setIsCreateModalOpen(false);
 
   const handleOpenEdit = (item: T) => setEditingItem(item);
