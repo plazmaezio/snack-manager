@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import type { UserResponse } from "../../../types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Plus, Pencil, ShoppingCart, LogOut, LayoutGrid } from "lucide-react";
+import type { UserResponse } from "../../auth/types";
 
 interface UserDropdownProps {
   user: UserResponse;
@@ -63,11 +63,11 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
             </p>
             <p className="text-xs text-gray-500">
               {userType}
-              {user?.balance !== undefined &&
+              {typeof user?.balance === "number" &&
                 ` | Balance: $${
                   user.balance % 1 === 0
                     ? user.balance.toFixed(1)
-                    : Number(user.balance.toString()).toFixed(2)
+                    : user.balance.toFixed(2)
                 }`}
             </p>
           </div>
@@ -88,7 +88,7 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
           {(user.type === "ADMIN" || user.type === "EMPLOYEE") && (
             <button
               onClick={() => {
-                handleNavigation("manage-inventory");
+                handleNavigation("/manage-inventory");
               }}
               className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
             >
@@ -97,25 +97,33 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
             </button>
           )}
 
+          {/* CLIENT buttons */}
+          {user.type === "CLIENT" && (
+            <>
+              <button
+                onClick={() => {
+                  // client
+                  handleNavigation("/edit-profile");
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit Profile
+              </button>
+              <button
+                onClick={() => {
+                  // client
+                  handleNavigation("/my-purchases");
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                Purchases
+              </button>
+            </>
+          )}
+
           {/* NO RESTRICTIONS buttons: All Authenticated Users */}
-          <button
-            onClick={() => {
-              handleNavigation("/edit-profile");
-            }}
-            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
-          >
-            <Pencil className="w-4 h-4" />
-            Edit Profile
-          </button>
-          <button
-            onClick={() => {
-              handleNavigation("/my-purchases");
-            }}
-            className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            Purchases
-          </button>
           <button
             onClick={() => {
               onLogout();

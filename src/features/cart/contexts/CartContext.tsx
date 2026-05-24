@@ -1,11 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type {
-  DishResponse,
-  DailyMenuResponse,
-  CartItem,
-  CartDishItem,
-  CartMenuItem,
-} from "../../../types";
+import type { CartDishItem, CartItem, CartMenuItem } from "../types";
+import type { DishResponse } from "../../inventory/types";
+import type { DailyMenuResponse } from "../../daily-menu/types";
 
 interface CartContextType {
   cartItems: CartItem[];

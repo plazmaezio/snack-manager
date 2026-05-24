@@ -1,4 +1,5 @@
-import type { DishResponse, DailyMenuResponse } from "../../../types/index";
+import type { DailyMenuResponse } from "../../daily-menu/types";
+import type { DishResponse } from "../../inventory/types";
 
 export interface CartDishItem {
   type: "dish";

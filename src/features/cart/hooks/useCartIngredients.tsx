@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import type { IngredientResponse, DishResponse } from "../../../types";
 import type { CartItem } from "../types/cart.types";
 import { getMenuDishNames } from "../types/cart.helpers";
 import { api } from "../../../shared/services/api";
+import type { DishResponse, IngredientResponse } from "../../inventory/types";
 
 const separateIngredientsByAllergen = (ingredients: IngredientResponse[]) => ({
   withAllergens: [...new Set(ingredients.filter((i) => i.allergen !== "NONE"))],

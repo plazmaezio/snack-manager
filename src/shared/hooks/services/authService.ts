@@ -1,4 +1,8 @@
-import type { LoginResponse, UserRequest, UserResponse } from "../types";
+import type {
+  LoginResponse,
+  UserRequest,
+  UserResponse,
+} from "../../../features/auth/types";
 import { api } from "../../services/api";
 
 const loginService = async (

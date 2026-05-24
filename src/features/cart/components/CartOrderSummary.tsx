@@ -1,10 +1,11 @@
 import { Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import type { CartItem, PurchaseRequest } from "../../../types";
 import { getItemKey, getItemName, getItemPrice } from "../types/cart.helpers";
 import { useAuth } from "../../auth/contexts/AuthContext";
 import { createPurchase } from "../services/purchaseService";
 import type { UserResponse } from "../../auth/types";
+import type { PurchaseRequest } from "../types/purchase.types";
+import type { CartItem } from "../types";
 
 interface CartOrderSummaryProps {
   cartItems: CartItem[];

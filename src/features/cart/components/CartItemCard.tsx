@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { CartItem } from "../types/cart.types";
-import type { IngredientResponse, DishResponse } from "../../../types";
 import {
   getItemKey,
   getItemName,
@@ -19,6 +18,7 @@ import {
 } from "../types/cart.helpers";
 import AllergenBadges from "./AllergenBadges";
 import IngredientList from "./IngredientList";
+import type { DishResponse, IngredientResponse } from "../../inventory/types";
 
 interface CartItemCardProps {
   item: CartItem;

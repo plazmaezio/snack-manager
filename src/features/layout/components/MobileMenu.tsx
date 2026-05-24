@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import MobileNavLinks from "./MobileNavLinks";
 import { Pencil, ShoppingCart, LogOut, Plus, LayoutGrid } from "lucide-react";
 import type { UserResponse } from "../../auth/types";
-import type { CartItem } from "../../../types";
+import type { CartItem } from "../../cart/types";
 
 interface MobileMenuProps {
   isOpen: boolean;

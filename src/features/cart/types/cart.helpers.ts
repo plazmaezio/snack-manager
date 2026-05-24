@@ -1,4 +1,5 @@
-import type { CartItem, DishResponse } from "../../../types/index";
+import type { DishResponse } from "../../inventory/types";
+import type { CartItem } from "./cart.types";
 
 export const getItemKey = (item: CartItem) =>
   item.type === "dish" ? item.dish.id : item.menu.id;
