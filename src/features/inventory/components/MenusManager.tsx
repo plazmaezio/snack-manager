@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import CentralizedList from "../../../shared/components/CentralizedList";
-import { MenuCreateModal } from "./MenuCreateModal.tsx";
-import { MenuEditModal } from "./MenuEditModal.tsx";
+import { MenuCreateModal } from "./MenuCreateModal";
+import { MenuEditModal } from "./MenuEditModal";
 import type { DailyMenuResponse, DailyMenuRequest } from "../../daily-menu/types";
 import type { DishResponse, IngredientResponse, IngredientType } from "../types";
 import { fetchDishesService } from "../../../shared/services/dishService.tsx";
@@ -27,7 +27,6 @@ type MenuCategory = "MEAT" | "FISH" | "VEGETABLES";
 type MenuDishOption = {
 name: string;
 category: MenuCategory;
-ingredientNames: string[];
 };
 
 const MenusManager = () => {
@@ -101,7 +100,6 @@ return "VEGETABLES";
 return dishes.map((dish) => ({
 name: dish.name,
 category: getCategory(dish),
-ingredientNames: dish.ingredientNames,
 }));
 }, [dishes, ingredientTypeByName]);
 
@@ -128,6 +126,10 @@ if (!menuDishes.length || !ingredients.length) {
 return "Menu validation data is still loading";
 }
 
+if (!values.meatDishName && !values.fishDishName && !values.vegetarianDishName) {
+return "Select at least one dish before saving.";
+}
+
 return (
 getDishValidationError(values.meatDishName, "MEAT") ||
 getDishValidationError(values.fishDishName, "FISH") ||
@@ -137,6 +139,12 @@ getDishValidationError(values.vegetarianDishName, "VEGETABLES")
 
 const handleCreate = async (values: DailyMenuRequest) => {
 try {
+const error = validateMenuPayload(values);
+if (error) {
+setError(error);
+return;
+}
+
 const response = await createMenuService(values);
 setMenus((prev) => [...prev, response]);
 setError(null);
@@ -147,6 +155,12 @@ setError("Failed to create menu");
 
 const handleUpdate = async (id: string, values: DailyMenuRequest) => {
 try {
+const error = validateMenuPayload(values);
+if (error) {
+setError(error);
+return;
+}
+
 const updatedMenu = await updateMenuService(id, values);
 setMenus((current: DailyMenuResponse[]) =>
 current.map((m) => (m.id === id ? updatedMenu : m)),
