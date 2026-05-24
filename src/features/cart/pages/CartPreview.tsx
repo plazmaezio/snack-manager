@@ -9,7 +9,7 @@ import useCartIngredients from "../hooks/useCartIngredients";
 
 const MOCK_DISHES = [
   {
-    id: "mock-1",
+    id: "bd7cbe2e-8a6b-7c5d-df9e-ab2c3d4e5f6a",
     name: "Grilled Chicken",
     ingredientNames: ["Chicken", "Garlic", "Lemon"],
     price: 8.99,
