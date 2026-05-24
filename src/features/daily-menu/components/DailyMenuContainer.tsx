@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import type { DailyMenuResponse, DishResponse } from "../../../types";
 import { api } from "../../../shared/services/api";
 import DailyMenuDish from "./DailyMenuDish";
 import { MENU_DISCOUNT } from "../config/dailyMenu";
 import { useCart } from "../../cart/contexts/CartContext";
+import type { DishResponse } from "../../inventory/types";
+import type { DailyMenuResponse } from "../types";
+import { Link } from "react-router-dom";
 
 interface DailyMenuProps {
   day: string;
@@ -24,21 +26,21 @@ const mockMenu: DailyMenuResponse = {
 // mock: delete when api is ready
 const mockDishes: DishResponse[] = [
   {
-    id: "1",
+    id: "bd7cbe2e-8a6b-7c5d-df9e-ab2c3d4e5f6a",
     name: "Grilled Chicken",
     ingredientNames: ["Chicken", "Garlic", "Lemon"],
     price: 8.99,
     imageUrl: "",
   },
   {
-    id: "2",
+    id: "bd7cbe2e-8a6b-7c5d-df9e-ab2c3d4e5f6b",
     name: "Baked Salmon",
     ingredientNames: ["Salmon", "Lemon", "Herbs"],
     price: 12.99,
     imageUrl: "",
   },
   {
-    id: "3",
+    id: "bd7cbe2e-8a6b-7c5d-df9e-ab2c3d4e5f6c",
     name: "Veggie Stir-fry",
     ingredientNames: ["Bell Peppers", "Broccoli", "Cheese", "Lemon"],
     price: 7.99,
@@ -71,7 +73,7 @@ const DailyMenuContainer = ({
       })
       .catch((error) => {
         if (error.status === 404) {
-          // to do: when api return something, change to setMenu(null)
+          // TO:DO: when api return something, change to setMenu(null)
           setMenu(mockMenu);
         } else {
           console.error("Error fetching menu:", error);
@@ -122,9 +124,24 @@ const DailyMenuContainer = ({
       {/* Today's Dishes */}
       {menu ? (
         <div className="space-y-2">
-          {meatDish && <DailyMenuDish dish={meatDish} />}
-          {fishDish && <DailyMenuDish dish={fishDish} />}
-          {vegetarianDish && <DailyMenuDish dish={vegetarianDish} />}
+          {meatDish && (
+            <Link to={`/menu/${meatDish.id}`} className="block hover:underline">
+              <DailyMenuDish dish={meatDish} />
+            </Link>
+          )}
+          {fishDish && (
+            <Link to={`/menu/${fishDish.id}`} className="block hover:underline">
+              <DailyMenuDish dish={fishDish} />
+            </Link>
+          )}
+          {vegetarianDish && (
+            <Link
+              to={`/menu/${vegetarianDish.id}`}
+              className="block hover:underline"
+            >
+              <DailyMenuDish dish={vegetarianDish} />
+            </Link>
+          )}
 
           <p className="text-sm font-semibold mt-2">
             Menu total:{" "}

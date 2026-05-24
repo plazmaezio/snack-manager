@@ -156,9 +156,11 @@ const DishDetail = () => {
         Back to Menu
       </button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* CHANGED: Added items-start to the grid to prevent vertical centering stretching */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* Dish Image */}
-        <div className="flex items-center justify-center">
+        {/* CHANGED: changed items-center to items-start so it stays pinned to the top */}
+        <div className="flex items-start justify-center w-full">
           <div className="w-full aspect-square rounded-lg overflow-hidden bg-linear-to-br from-accent-bg to-form-bg shadow-lg">
             {finalImageUrl ? (
               <img
@@ -187,7 +189,8 @@ const DishDetail = () => {
         </div>
 
         {/* Dish Details */}
-        <div className="flex flex-col justify-between">
+        {/* REMOVED: justify-between (which forced empty space gaps when content was short) */}
+        <div className="flex flex-col h-full justify-start">
           <div>
             {/* Header */}
             <div className="mb-6">
@@ -233,7 +236,7 @@ const DishDetail = () => {
           </div>
 
           {/* Add to Cart Actions */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-4 mt-auto">
             <button
               onClick={handleAddToCart}
               disabled={isSubmitting}
