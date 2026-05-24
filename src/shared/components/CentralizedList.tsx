@@ -2,8 +2,9 @@ import React, { useState, useMemo } from "react";
 import { formatName } from "../utils/nameFormatting.ts";
 import type { UserResponse} from "../../features/auth/types";
 import type { DishResponse, IngredientResponse } from "../../features/inventory/types";
+import type { DailyMenuResponse } from "../../features/daily-menu/types/menu.types.ts";
 
-type ClassTypes = DishResponse | UserResponse | IngredientResponse;
+type ClassTypes = DishResponse | UserResponse | IngredientResponse | DailyMenuResponse;
 
 type FieldFormatters<T> = Partial<{
   [K in keyof T]: (value: T[K], item: T) => React.ReactNode;
