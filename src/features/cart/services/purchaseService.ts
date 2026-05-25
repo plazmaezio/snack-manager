@@ -11,6 +11,7 @@ const createPurchase = async (
   try {
     for (const item of purchaseData) {
       if (!item.clientUsername || !item.dishName || !item.date) {
+        console.error("Invalid purchase data:", item);
         throw new Error("Missing required purchase fields");
       }
       placedOrdersResponse.push(

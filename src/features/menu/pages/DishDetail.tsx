@@ -6,8 +6,8 @@ import {
   fetchAndMapDishImages,
 } from "../../../shared/services/dishService";
 import { getIngredientsService } from "../../../shared/services/ingredientService";
-import { api } from "../../../shared/services/api";
 import { formatName } from "../../../shared/utils/nameFormatting";
+import { useCart } from "../../cart/contexts/CartContext";
 
 const DishDetail = () => {
   const { dishId } = useParams<{ dishId: string }>();
@@ -16,10 +16,10 @@ const DishDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [masterIngredients, setMasterIngredients] = useState<
     IngredientResponse[]
   >([]);
+  const { addDish } = useCart();
 
   useEffect(() => {
     document.title = "Dish Details - Snack Manager";
@@ -81,21 +81,10 @@ const DishDetail = () => {
     return Array.from(identifiedAllergens);
   }, [dish, masterIngredients]);
 
-  const handleAddToCart = async () => {
+  // replace handleAddToCart with:
+  const handleAddToCart = () => {
     if (!dish) return;
-
-    try {
-      setIsSubmitting(true);
-      await api.post("/cart", {
-        dishId: dish.id,
-        quantity: 1,
-      });
-    } catch (err) {
-      console.error("Failed to add item to cart:", err);
-      alert("Could not add item to cart. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    addDish(dish);
   };
 
   if (loading) {
@@ -239,10 +228,9 @@ const DishDetail = () => {
           <div className="flex gap-3 pt-4 mt-auto">
             <button
               onClick={handleAddToCart}
-              disabled={isSubmitting}
-              className="flex-1 px-6 py-3 bg-accent text-white rounded-lg font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-6 py-3 bg-accent text-white rounded-lg font-bold text-lg hover:opacity-90 transition-opacity"
             >
-              {isSubmitting ? "Adding..." : "Add to Cart"}
+              Add to Cart
             </button>
           </div>
         </div>
