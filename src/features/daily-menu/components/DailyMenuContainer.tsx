@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../../shared/services/api";
 import DailyMenuDish from "./DailyMenuDish";
-import { MENU_DISCOUNT } from "../config/dailyMenu";
 import { useCart } from "../../cart/contexts/CartContext";
 import type { DishResponse } from "../../inventory/types";
 import type { DailyMenuResponse } from "../types";
@@ -15,38 +14,7 @@ interface DailyMenuProps {
   dishes: DishResponse[];
 }
 
-// to do: mock data, so delete when api is ready
-const mockMenu: DailyMenuResponse = {
-  id: "1",
-  date: "",
-  meatDishName: "Grilled Chicken",
-  fishDishName: "Baked Salmon",
-  vegetarianDishName: "Veggie Stir-fry",
-};
-// mock: delete when api is ready
-const mockDishes: DishResponse[] = [
-  {
-    id: "bd7cbe2e-8a6b-7c5d-df9e-ab2c3d4e5f6a",
-    name: "Grilled Chicken",
-    ingredientNames: ["Chicken", "Garlic", "Lemon"],
-    price: 8.99,
-    imageUrl: "",
-  },
-  {
-    id: "bd7cbe2e-8a6b-7c5d-df9e-ab2c3d4e5f6b",
-    name: "Baked Salmon",
-    ingredientNames: ["Salmon", "Lemon", "Herbs"],
-    price: 12.99,
-    imageUrl: "",
-  },
-  {
-    id: "bd7cbe2e-8a6b-7c5d-df9e-ab2c3d4e5f6c",
-    name: "Veggie Stir-fry",
-    ingredientNames: ["Bell Peppers", "Broccoli", "Cheese", "Lemon"],
-    price: 7.99,
-    imageUrl: "",
-  },
-];
+// no mock data — rely on API-provided menus and dishes
 
 const DailyMenuContainer = ({
   day,
@@ -55,11 +23,11 @@ const DailyMenuContainer = ({
   isToday,
   dishes,
 }: DailyMenuProps) => {
-  const [menu, setMenu] = useState<DailyMenuResponse | null>(mockMenu);
-  const { addMenu } = useCart();
+  const [menu, setMenu] = useState<DailyMenuResponse | null>(null);
+  const { addDish } = useCart();
 
-  // merge real dishes with mocks, getDish looks in both
-  const allDishes = [...dishes, ...mockDishes];
+  // use only real dishes
+  const allDishes = [...dishes];
   const getDish = (name?: string) =>
     allDishes.find((d) => d.name === name) ?? null;
 
@@ -73,9 +41,8 @@ const DailyMenuContainer = ({
       })
       .catch((error) => {
         if (error.status === 404) {
-          // TO:DO: when api return something, change to setMenu(null)
-          setMenu(mockMenu);
-        } else {
+              setMenu(null);
+            } else {
           console.error("Error fetching menu:", error);
         }
       });
@@ -85,30 +52,13 @@ const DailyMenuContainer = ({
   const fishDish = getDish(menu?.fishDishName);
   const vegetarianDish = getDish(menu?.vegetarianDishName);
 
-  const calculateMenuPrice = (): number => {
-    let price = 0;
-    if (meatDish && meatDish.price >= 0) {
-      price += meatDish.price;
-    }
-
-    if (fishDish && fishDish.price >= 0) {
-      price += fishDish.price;
-    }
-
-    if (vegetarianDish && vegetarianDish.price >= 0) {
-      price += vegetarianDish.price;
-    }
-
-    return Number((price * MENU_DISCOUNT).toFixed(2));
-  };
-
-  const handleAddToCart = () => {
-    if (!menu) return;
-    addMenu(menu, calculateMenuPrice());
-  };
+  // whole-menu add and menu total removed — per-dish adds are available
 
   return (
-    <div className={`${isPast ? "opacity-50" : ""}`}>
+    <div
+      className={`${isPast ? "opacity-50" : ""} pl-3`}
+      style={{ borderLeft: `4px solid var(--color-brand, #3b82f6)` }}
+    >
       <h4
         className={`text-lg font-medium mb-2 ${isToday ? "text-brand font-bold" : ""}`}
       >
@@ -125,42 +75,85 @@ const DailyMenuContainer = ({
       {menu ? (
         <div className="space-y-2">
           {meatDish && (
-            <Link to={`/menu/${meatDish.id}`} className="block hover:underline">
-              <DailyMenuDish dish={meatDish} />
-            </Link>
+            <div className="flex items-center justify-between">
+              <Link to={`/menu/${meatDish.id}`} className="block hover:underline flex-1">
+                <DailyMenuDish dish={meatDish} />
+              </Link>
+              {isToday && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    addDish(meatDish);
+                  }}
+                  aria-label={`Add ${meatDish.name} to cart`}
+                  className="ml-2 p-2 rounded hover:bg-gray-100"
+                >
+                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+                    <circle cx="7" cy="19" r="2" />
+                    <circle cx="17" cy="19" r="2" />
+                  </svg>
+                </button>
+              )}
+            </div>
           )}
           {fishDish && (
-            <Link to={`/menu/${fishDish.id}`} className="block hover:underline">
-              <DailyMenuDish dish={fishDish} />
-            </Link>
+            <div className="flex items-center justify-between">
+              <Link to={`/menu/${fishDish.id}`} className="block hover:underline flex-1">
+                <DailyMenuDish dish={fishDish} />
+              </Link>
+              {isToday && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    addDish(fishDish);
+                  }}
+                  aria-label={`Add ${fishDish.name} to cart`}
+                  className="ml-2 p-2 rounded hover:bg-gray-100"
+                >
+                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+                    <circle cx="7" cy="19" r="2" />
+                    <circle cx="17" cy="19" r="2" />
+                  </svg>
+                </button>
+              )}
+            </div>
           )}
           {vegetarianDish && (
-            <Link
-              to={`/menu/${vegetarianDish.id}`}
-              className="block hover:underline"
-            >
-              <DailyMenuDish dish={vegetarianDish} />
-            </Link>
+            <div className="flex items-center justify-between">
+              <Link to={`/menu/${vegetarianDish.id}`} className="block hover:underline flex-1">
+                <DailyMenuDish dish={vegetarianDish} />
+              </Link>
+              {isToday && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    addDish(vegetarianDish);
+                  }}
+                  aria-label={`Add ${vegetarianDish.name} to cart`}
+                  className="ml-2 p-2 rounded hover:bg-gray-100"
+                >
+                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+                    <circle cx="7" cy="19" r="2" />
+                    <circle cx="17" cy="19" r="2" />
+                  </svg>
+                </button>
+              )}
+            </div>
           )}
 
-          <p className="text-sm font-semibold mt-2">
-            Menu total:{" "}
-            <span className="text-brand">${calculateMenuPrice()}</span>
-          </p>
+          {/* Menu total removed */}
         </div>
       ) : (
         <p className="text-sm opacity-50">No menu available for this day</p>
       )}
 
-      {/* Add to cart button */}
-      {isToday && (
-        <button
-          onClick={handleAddToCart}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Add to Cart
-        </button>
-      )}
+      {/* whole-menu Add to Cart removed */}
     </div>
   );
 };
