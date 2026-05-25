@@ -7,33 +7,10 @@ import CartOrderSummary from "../components/CartOrderSummary";
 import { getItemKey } from "../types/cart.helpers";
 import useCartIngredients from "../hooks/useCartIngredients";
 
-const MOCK_DISHES = [
-  {
-    id: "bd7cbe2e-8a6b-7c5d-df9e-ab2c3d4e5f6a",
-    name: "Grilled Chicken",
-    ingredientNames: ["Chicken", "Garlic", "Lemon"],
-    price: 8.99,
-    imageUrl: "",
-  },
-  {
-    id: "mock-2",
-    name: "Baked Salmon",
-    ingredientNames: ["Salmon", "Lemon", "Herbs"],
-    price: 12.99,
-    imageUrl: "",
-  },
-  {
-    id: "mock-3",
-    name: "Caesar Salad",
-    ingredientNames: ["Lettuce", "Croutons", "Parmesan"],
-    price: 8.99,
-    imageUrl: "",
-  },
-];
+// removed mock dishes — use real dishes from API or cart items
 
 const CartPreview = () => {
-  const { cartItems, removeItem, updateQuantity, cartTotal, addDish } =
-    useCart();
+  const { cartItems, removeItem, updateQuantity, cartTotal } = useCart();
   const {
     loading,
     dishes,
@@ -94,18 +71,7 @@ const CartPreview = () => {
         <h1 className="text-4xl font-bold text-heading">Shopping Cart</h1>
       </div>
 
-      {/* Test buttons */}
-      <div className="flex gap-3 mb-6">
-        {MOCK_DISHES.map((dish) => (
-          <button
-            key={dish.id}
-            onClick={() => addDish(dish)}
-            className="px-4 py-2 border border-dashed border-brand text-brand text-sm rounded-md hover:bg-brand hover:text-white transition-colors"
-          >
-            + Add "{dish.name}" (test)
-          </button>
-        ))}
-      </div>
+      {/* test buttons removed */}
 
       {loading && (
         <div className="flex items-center gap-2 text-sm text-main-text opacity-60 mb-4">
@@ -129,8 +95,7 @@ const CartPreview = () => {
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item) => {
               const key = getItemKey(item);
-              // merge real dishes with mocks before passing down
-              const allDishes = [...dishes, ...MOCK_DISHES];
+              const allDishes = [...dishes];
               return (
                 <CartItemCard
                   key={key}
