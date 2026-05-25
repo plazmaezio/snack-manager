@@ -14,6 +14,12 @@ export const fetchUsersService = async (): Promise<UserResponse[]> => {
   return await api.get<UserResponse[]>("/users");
 };
 
+export const fetchUserByIdService = async (
+  userId: string,
+): Promise<UserResponse> => {
+  return await api.get<UserResponse>(`/users/${userId}`);
+};
+
 export const createUserService = async (
   userData: UserRequest,
 ): Promise<UserResponse> => {

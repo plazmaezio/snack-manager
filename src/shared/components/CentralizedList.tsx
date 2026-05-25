@@ -18,9 +18,10 @@ interface CentralizedListProps<T extends ClassTypes> {
   searchFields: (keyof T)[];
   fieldFormatters?: FieldFormatters<T>;
   onCreate?: () => void;
-  renderCreateModal: (onClose: () => void) => React.ReactNode;
-  renderEditModal: (item: T, onClose: () => void) => React.ReactNode;
-  onDelete: (ids: string[]) => void;
+  renderCreateModal?: (onClose: () => void) => React.ReactNode;
+  renderEditModal?: (item: T, onClose: () => void) => React.ReactNode;
+  renderRowActions?: (item: T) => React.ReactNode;
+  onDelete?: (ids: string[]) => void;
 }
 
 type SortDirection = "asc" | "desc";
@@ -34,6 +35,7 @@ const CentralizedList = <T extends ClassTypes>({
   onCreate,
   renderCreateModal,
   renderEditModal,
+  renderRowActions,
   onDelete,
 }: CentralizedListProps<T>) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -123,7 +125,7 @@ const CentralizedList = <T extends ClassTypes>({
   };
 
   const handleDelete = () => {
-    if (selectedIds.size === 0) return;
+    if (selectedIds.size === 0 || !onDelete) return;
 
     const isConfirmed = window.confirm(
       `Are you sure you want to delete ${selectedIds.size} item${selectedIds.size > 1 ? "s" : ""}?`,
@@ -141,12 +143,22 @@ const CentralizedList = <T extends ClassTypes>({
       return;
     }
 
+    if (!renderCreateModal) {
+      return;
+    }
+
     setIsCreateModalOpen(true);
   };
   const handleCloseCreate = () => setIsCreateModalOpen(false);
 
   const handleOpenEdit = (item: T) => setEditingItem(item);
   const handleCloseEdit = () => setEditingItem(null);
+
+  const canCreate = Boolean(onCreate || renderCreateModal);
+  const canDelete = Boolean(onDelete);
+  const canRenderRowActions = Boolean(renderEditModal || renderRowActions);
+  const columnCount =
+    tableFields.length + (canDelete ? 1 : 0) + (canRenderRowActions ? 1 : 0);
 
   const getDisplayValue = (item: T, field: keyof T): React.ReactNode => {
     const rawValue = item[field];
@@ -201,22 +213,26 @@ const CentralizedList = <T extends ClassTypes>({
         </div>
 
         {/* Toolbar: create + bulk delete */}
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <button
-            onClick={handleOpenCreate}
-            className="rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90 active:scale-95"
-          >
-            Create
-          </button>
-          {selectedIds.size > 0 && (
-            <button
-              onClick={handleDelete}
-              className="rounded-full border border-red-500/40 bg-red-500/10 px-5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-500/15 dark:text-red-300"
-            >
-              Delete ({selectedIds.size})
-            </button>
-          )}
-        </div>
+        {(canCreate || canDelete) && (
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            {canCreate && (
+              <button
+                onClick={handleOpenCreate}
+                className="rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90 active:scale-95"
+              >
+                Create
+              </button>
+            )}
+            {canDelete && selectedIds.size > 0 && (
+              <button
+                onClick={handleDelete}
+                className="rounded-full border border-red-500/40 bg-red-500/10 px-5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-500/15 dark:text-red-300"
+              >
+                Delete ({selectedIds.size})
+              </button>
+            )}
+          </div>
+        )}
 
         {/* List */}
         <div className="overflow-hidden rounded-2xl border border-ui-border bg-(--input-bg)">
@@ -224,15 +240,17 @@ const CentralizedList = <T extends ClassTypes>({
             <table className="min-w-full table-fixed border-collapse text-left text-sm text-main-text">
               <thead className="bg-main-bg/70 text-xs uppercase tracking-[0.18em] text-heading">
                 <tr>
-                  <th className="w-14 px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={isAllSelected}
-                      onChange={handleSelectAll}
-                      className="h-4 w-4 accent-brand"
-                      aria-label="Select all rows"
-                    />
-                  </th>
+                  {canDelete && (
+                    <th className="w-14 px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected}
+                        onChange={handleSelectAll}
+                        className="h-4 w-4 accent-brand"
+                        aria-label="Select all rows"
+                      />
+                    </th>
+                  )}
                   {tableFields.map((field) => (
                     <th
                       key={field}
@@ -241,7 +259,9 @@ const CentralizedList = <T extends ClassTypes>({
                       {humanizeField(field)}
                     </th>
                   ))}
-                  <th className="w-32 px-4 py-3 font-semibold">Actions</th>
+                  {canRenderRowActions && (
+                    <th className="w-32 px-4 py-3 font-semibold">Actions</th>
+                  )}
                 </tr>
               </thead>
 
@@ -249,7 +269,7 @@ const CentralizedList = <T extends ClassTypes>({
                 {processedData.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={tableFields.length + 2}
+                      colSpan={columnCount}
                       className="px-4 py-8 text-center text-main-text"
                     >
                       No results found.
@@ -265,15 +285,17 @@ const CentralizedList = <T extends ClassTypes>({
                         key={id}
                         className="border-t border-ui-border/70 transition hover:bg-main-bg/60"
                       >
-                        <td className="px-4 py-4 align-middle">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => handleSelectItem(id)}
-                            className="h-4 w-4 accent-brand"
-                            aria-label={`Select row ${id}`}
-                          />
-                        </td>
+                        {canDelete && (
+                          <td className="px-4 py-4 align-middle">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => handleSelectItem(id)}
+                              className="h-4 w-4 accent-brand"
+                              aria-label={`Select row ${id}`}
+                            />
+                          </td>
+                        )}
 
                         {tableFields.map((field) => (
                           <td key={field} className="px-4 py-4 align-middle">
@@ -299,14 +321,21 @@ const CentralizedList = <T extends ClassTypes>({
                           </td>
                         ))}
 
-                        <td className="px-4 py-4 align-middle">
-                          <button
-                            onClick={() => handleOpenEdit(item)}
-                            className="rounded-full border border-ui-border bg-main-bg px-4 py-2 text-sm font-medium text-main-text transition hover:border-brand hover:text-brand"
-                          >
-                            Edit
-                          </button>
-                        </td>
+                        {canRenderRowActions && (
+                          <td className="px-4 py-4 align-middle">
+                            <div className="flex flex-wrap gap-2">
+                              {renderRowActions?.(item)}
+                              {renderEditModal && (
+                                <button
+                                  onClick={() => handleOpenEdit(item)}
+                                  className="rounded-full border border-ui-border bg-main-bg px-4 py-2 text-sm font-medium text-main-text transition hover:border-brand hover:text-brand"
+                                >
+                                  Edit
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     );
                   })
@@ -318,10 +347,10 @@ const CentralizedList = <T extends ClassTypes>({
       </div>
 
       {/* Create modal */}
-      {isCreateModalOpen && renderCreateModal(handleCloseCreate)}
+      {isCreateModalOpen && renderCreateModal?.(handleCloseCreate)}
 
       {/* Edit modal */}
-      {editingItem && renderEditModal(editingItem, handleCloseEdit)}
+      {editingItem && renderEditModal?.(editingItem, handleCloseEdit)}
     </>
   );
 };

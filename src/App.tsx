@@ -53,6 +53,30 @@ const App = () => {
               }
             />
             <Route
+              path="/manage-users/users"
+              element={
+                <RoleRoute allowedRoles={["ADMIN"]}>
+                  <ManageUsers />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/manage-users/purchases"
+              element={
+                <RoleRoute allowedRoles={["ADMIN"]}>
+                  <ManageUsers />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/manage-users/purchases/:clientId"
+              element={
+                <RoleRoute allowedRoles={["ADMIN"]}>
+                  <ManageUsers />
+                </RoleRoute>
+              }
+            />
+            <Route
               path="/edit-profile"
               element={
                 <RoleRoute allowedRoles={["CLIENT"]}>
