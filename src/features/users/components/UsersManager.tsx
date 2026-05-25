@@ -368,6 +368,17 @@ const UsersManager = () => {
           type: (value) => userTypeOptions[value as UserType] ?? String(value),
           balance: (value) => Number(value ?? 0).toFixed(2),
         }}
+        renderRowActions={(item) =>
+          item.type === "CLIENT" ? (
+            <button
+              type="button"
+              onClick={() => navigate(`/manage-users/purchases/${item.id}`)}
+              className="rounded-full border border-ui-border bg-main-bg px-4 py-2 text-sm font-medium text-main-text transition hover:border-brand hover:text-brand"
+            >
+              Purchases
+            </button>
+          ) : null
+        }
         renderCreateModal={(onClose) => (
           <UserForm
             title="Create user"
