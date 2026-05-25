@@ -30,7 +30,7 @@ const App = () => {
             <Route path="/menu/:dishId" element={<DishDetail />} />
             <Route path="/cart" element={<CartPreview />} />
             <Route
-              path="/create-account"
+              path="/manage-users/create-account"
               element={
                 <RoleRoute allowedRoles={["ADMIN"]}>
                   <CreateAccount />

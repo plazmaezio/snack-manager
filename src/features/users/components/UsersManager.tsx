@@ -14,6 +14,10 @@ import {
   type UserResponse,
   type UserType,
 } from "../../auth/types";
+import {
+  getPasswordValidationErrors,
+  USERNAME_PATTERN,
+} from "../../../shared/utils/passwordValidation.ts";
 
 class UserModel implements UserResponse {
   id = "";
@@ -34,6 +38,7 @@ type UserFormProps = {
   submitLabel: string;
   initialValues: UserFormValues;
   requirePassword?: boolean;
+  showTypeSelector?: boolean;
   onSubmit: (values: {
     username: string;
     type: UserType;
@@ -43,7 +48,7 @@ type UserFormProps = {
   onClose: () => void;
 };
 
-const usernamePattern = "^[a-zA-Z0-9_-]+$";
+const hasBalanceField = (type: UserType) => type !== "EMPLOYEE";
 
 const parseBalance = (value: string): number | undefined => {
   if (!value.trim()) {
@@ -59,6 +64,7 @@ const UserForm = ({
   submitLabel,
   initialValues,
   requirePassword = false,
+  showTypeSelector = true,
   onSubmit,
   onClose,
 }: UserFormProps) => {
@@ -66,15 +72,42 @@ const UserForm = ({
   const [type, setType] = useState<UserType>(initialValues.type);
   const [balance, setBalance] = useState(initialValues.balance);
   const [password, setPassword] = useState(initialValues.password);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [inputErrors, setInputErrors] = useState<string[] | null>(null);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const normalizedPassword = password.trim();
+    const normalizedConfirmPassword = confirmPassword.trim();
+
+    if (requirePassword && !normalizedConfirmPassword) {
+      setInputErrors(["Please confirm the password"]);
+      return;
+    }
+
+    if (normalizedPassword || normalizedConfirmPassword) {
+      if (normalizedPassword !== normalizedConfirmPassword) {
+        setInputErrors(["Passwords do not match"]);
+        return;
+      }
+    }
+
+    if (normalizedPassword) {
+      const passwordErrors = getPasswordValidationErrors(normalizedPassword);
+      if (passwordErrors.length > 0) {
+        setInputErrors(passwordErrors);
+        return;
+      }
+    }
+
+    setInputErrors(null);
+
     onSubmit({
       username: username.trim(),
       type,
-      balance: parseBalance(balance),
-      password: password.trim() || undefined,
+      balance: hasBalanceField(type) ? parseBalance(balance) : undefined,
+      password: normalizedPassword || undefined,
     });
   };
 
@@ -100,56 +133,64 @@ const UserForm = ({
             onChange={(event) => setUsername(event.target.value)}
             placeholder="Enter username"
             required
-            pattern={usernamePattern}
+            pattern={USERNAME_PATTERN}
             title="Use only letters, numbers, underscores, and hyphens"
             className="mb-4 w-full rounded-full border border-ui-border bg-(--input-bg) px-4 py-2.5 text-main-text outline-none transition focus:border-brand"
           />
 
-          <label className="mb-2 block font-medium text-main-text">Type</label>
-          <div className="mb-4 rounded-2xl border border-ui-border overflow-hidden">
-            <div className="max-h-32 overflow-y-auto scrollbar-themed p-3">
-              <div className="flex flex-wrap gap-2">
-                {(
-                  Object.entries(userTypeOptions) as [UserType, string][]
-                ).map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setType(value)}
-                    className="rounded-full px-4 py-2 text-sm font-medium transition"
-                    style={
-                      type === value
-                        ? { backgroundColor: "var(--accent)", color: "white" }
-                        : {
-                            backgroundColor: "var(--input-bg)",
-                            color: "var(--text-h)",
-                            border: "1px solid var(--ui-border)",
-                          }
-                    }
-                  >
-                    {label}
-                  </button>
-                ))}
+          {showTypeSelector && (
+            <>
+              <label className="mb-2 block font-medium text-main-text">Type</label>
+              <div className="mb-4 rounded-2xl border border-ui-border overflow-hidden">
+                <div className="max-h-32 overflow-y-auto scrollbar-themed p-3">
+                  <div className="flex flex-wrap gap-2">
+                    {(
+                      Object.entries(userTypeOptions) as [UserType, string][]
+                    ).map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setType(value)}
+                        className="rounded-full px-4 py-2 text-sm font-medium transition"
+                        style={
+                          type === value
+                            ? { backgroundColor: "var(--accent)", color: "white" }
+                            : {
+                                backgroundColor: "var(--input-bg)",
+                                color: "var(--text-h)",
+                                border: "1px solid var(--ui-border)",
+                              }
+                        }
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
 
-          <label
-            htmlFor="user-balance"
-            className="mb-1 block font-medium text-main-text"
-          >
-            Balance
-          </label>
-          <input
-            id="user-balance"
-            type="number"
-            min="0"
-            step="0.01"
-            value={balance}
-            onChange={(event) => setBalance(event.target.value)}
-            placeholder="Enter balance"
-            className="mb-4 w-full rounded-full border border-ui-border bg-(--input-bg) px-4 py-2.5 text-main-text outline-none transition focus:border-brand"
-          />
+          {hasBalanceField(type) && (
+            <>
+              <label
+                htmlFor="user-balance"
+                className="mb-1 block font-medium text-main-text"
+              >
+                Balance
+              </label>
+              <input
+                id="user-balance"
+                type="number"
+                min="0"
+                step="0.01"
+                value={balance}
+                onChange={(event) => setBalance(event.target.value)}
+                placeholder="Enter balance"
+                className="mb-4 w-full rounded-full border border-ui-border bg-(--input-bg) px-4 py-2.5 text-main-text outline-none transition focus:border-brand"
+              />
+            </>
+          )}
 
           <label
             htmlFor="user-password"
@@ -166,6 +207,30 @@ const UserForm = ({
             required={requirePassword}
             className="mb-2 w-full rounded-full border border-ui-border bg-(--input-bg) px-4 py-2.5 text-main-text outline-none transition focus:border-brand"
           />
+
+          <label
+            htmlFor="user-confirm-password"
+            className="mb-1 block font-medium text-main-text"
+          >
+            Confirm Password
+          </label>
+          <input
+            id="user-confirm-password"
+            type="password"
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            placeholder={requirePassword ? "Confirm password" : "Confirm new password"}
+            required={requirePassword}
+            className="mb-2 w-full rounded-full border border-ui-border bg-(--input-bg) px-4 py-2.5 text-main-text outline-none transition focus:border-brand"
+          />
+
+          {inputErrors && (
+            <div className="mt-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 shadow-[0px_0px_10px_0px] shadow-red-500/40">
+              {inputErrors.map((error, index) => (
+                <p key={index}>- {error}</p>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="mt-6 flex flex-col gap-3 bg-main-bg pt-2 sm:flex-row">
@@ -247,7 +312,7 @@ const UsersManager = () => {
       const payload: UserUpdateRequest = {
         username: values.username,
         type: values.type,
-        balance: values.balance,
+        ...(values.balance !== undefined ? { balance: values.balance } : {}),
         ...(values.password ? { password: values.password } : {}),
       };
 
@@ -287,7 +352,7 @@ const UsersManager = () => {
       <CentralizedList
         data={users}
         model={UserModel}
-        onCreate={() => navigate("/create-account")}
+        onCreate={() => navigate("/manage-users/create-account")}
         sortFields={[
           "username",
           "type",
@@ -325,6 +390,7 @@ const UsersManager = () => {
           <UserForm
             title="Edit user"
             submitLabel="Save changes"
+            showTypeSelector={false}
             initialValues={{
               username: item.username,
               type: item.type,

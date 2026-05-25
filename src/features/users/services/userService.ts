@@ -8,6 +8,8 @@ export type UserUpdateRequest = Omit<UserRequest, "password"> & {
   password?: string;
 };
 
+
+
 export const fetchUsersService = async (): Promise<UserResponse[]> => {
   return await api.get<UserResponse[]>("/users");
 };

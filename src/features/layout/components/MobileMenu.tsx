@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import MobileNavLinks from "./MobileNavLinks";
-import { Pencil, ShoppingCart, LogOut, Plus, LayoutGrid } from "lucide-react";
+import { Pencil, ShoppingCart, LogOut, Users, LayoutGrid } from "lucide-react";
 import type { UserResponse } from "../../auth/types";
 import type { CartItem } from "../../cart/types";
 
@@ -78,12 +78,12 @@ const MobileMenu = ({
             {user.type === "ADMIN" && (
               <button
                 onClick={() => {
-                  handleNavigation("/create-account");
+                  handleNavigation("/manage-users");
                 }}
                 className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2"
               >
-                <Plus className="w-4 h-4" />
-                Create Account
+                <Users className="w-4 h-4" />
+                Manage Users
               </button>
             )}
 

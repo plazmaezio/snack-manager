@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Plus, Pencil, ShoppingCart, LogOut, LayoutGrid } from "lucide-react";
+import { Users, Pencil, ShoppingCart, LogOut, LayoutGrid } from "lucide-react";
 import type { UserResponse } from "../../auth/types";
 
 interface UserDropdownProps {
@@ -75,12 +75,12 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
           {user.type === "ADMIN" && (
             <button
               onClick={() => {
-                handleNavigation("/create-account");
+                handleNavigation("/manage-users");
               }}
               className="w-full text-left px-4 py-2 hover:bg-brand-bg transition-colors flex items-center gap-2"
             >
-              <Plus className="w-4 h-4" />
-              Create Account
+              <Users className="w-4 h-4" />
+              Manage Users
             </button>
           )}
 
