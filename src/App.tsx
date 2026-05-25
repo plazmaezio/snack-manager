@@ -1,6 +1,5 @@
 import "./App.css";
 import Home from "./features/daily-menu/Home";
-import Menu from "./features/menu/pages/Menu";
 import DishDetail from "./features/menu/pages/DishDetail";
 import Login from "./features/auth/pages/Login";
 import CreateAccount from "./features/auth/pages/CreateAccount";
@@ -26,7 +25,6 @@ const App = () => {
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
-            <Route path="/menu" element={<Menu />} />
             <Route path="/menu/:dishId" element={<DishDetail />} />
             <Route path="/cart" element={<CartPreview />} />
             <Route

@@ -122,10 +122,10 @@ const DishDetail = () => {
           <p>{error || "Dish not found"}</p>
         </div>
         <button
-          onClick={() => navigate("/menu")}
+          onClick={() => navigate("/")}
           className="mt-4 px-4 py-2 bg-accent text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
         >
-          Back to Menu
+          Back to Home
         </button>
       </div>
     );
@@ -137,7 +137,7 @@ const DishDetail = () => {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 min-h-[calc(100vh-80px)]">
       {/* Back Button */}
       <button
-        onClick={() => navigate("/menu")}
+        onClick={() => navigate("/")}
         className="mb-6 flex items-center gap-2 text-accent hover:opacity-75 transition-opacity font-semibold"
       >
         <svg
@@ -153,7 +153,7 @@ const DishDetail = () => {
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        Back to Menu
+        Back to Home
       </button>
 
       {/* CHANGED: Added items-start to the grid to prevent vertical centering stretching */}
