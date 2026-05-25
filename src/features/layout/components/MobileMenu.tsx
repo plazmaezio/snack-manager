@@ -28,6 +28,8 @@ const MobileMenu = ({
 
   if (!isOpen) return null;
 
+  const isClient = user?.type === "CLIENT";
+
   const handleNavigation = (path: string) => {
     navigate(path);
     onClose();
@@ -101,14 +103,23 @@ const MobileMenu = ({
             )}
 
             {/* NO RESTRICTIONS: All Authenticated Users */}
-            <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2">
-              <Pencil className="w-4 h-4" />
-              Edit Profile
-            </button>
-            <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              Purchases
-            </button>
+            {isClient && (
+              <>
+                <button
+                  onClick={() => {
+                    handleNavigation("/edit-profile");
+                  }}
+                  className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2"
+                >
+                  <Pencil className="w-4 h-4" />
+                  Edit Profile
+                </button>
+                <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2">
+                  <ShoppingCart className="w-4 h-4" />
+                  Purchases
+                </button>
+              </>
+            )}
             <button
               onClick={() => {
                 onLogout();

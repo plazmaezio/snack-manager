@@ -27,6 +27,11 @@ export const updateUserService = async (
   return await api.put<UserResponse>(`/users/${userId}`, userData);
 };
 
+export const updateProfileService = async (
+  userData: UserUpdateRequest,
+): Promise<UserResponse> => {
+  return await api.put<UserResponse>(`/users/me`, userData);
+};
 export const deleteUserService = async (userId: string): Promise<void> => {
   await api.delete(`/users/${userId}`);
 };

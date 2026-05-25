@@ -12,6 +12,7 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const isClient = user.type === "CLIENT";
 
   const userType =
     user?.type === "ADMIN"
@@ -98,7 +99,7 @@ const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
           )}
 
           {/* CLIENT buttons */}
-          {user.type === "CLIENT" && (
+          {isClient && (
             <>
               <button
                 onClick={() => {
