@@ -12,6 +12,7 @@ import ManageUsers from "./features/users/pages/ManageUsers";
 import NavBar from "./features/layout/components/NavBar";
 import ProtectedRoute from "./features/auth/components/ProtectedRoute";
 import RoleRoute from "./features/auth/components/RoleRoute";
+import EditProfile from "./features/users/pages/EditProfile";
 
 const App = () => {
   return (
@@ -50,6 +51,14 @@ const App = () => {
               element={
                 <RoleRoute allowedRoles={["ADMIN"]}>
                   <ManageUsers />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/edit-profile"
+              element={
+                <RoleRoute allowedRoles={["CLIENT"]}>
+                  <EditProfile />
                 </RoleRoute>
               }
             />

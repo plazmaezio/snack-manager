@@ -101,7 +101,12 @@ const MobileMenu = ({
             )}
 
             {/* NO RESTRICTIONS: All Authenticated Users */}
-            <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2">
+            <button
+              onClick={() => {
+                handleNavigation("/edit-profile");
+              }}
+              className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2"
+            >
               <Pencil className="w-4 h-4" />
               Edit Profile
             </button>
