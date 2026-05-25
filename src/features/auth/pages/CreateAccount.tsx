@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import type { UserRequest, UserType } from "../types";
 import SuccessPopUp from "../../../shared/components/SuccessPopUp";
+import {
+  getPasswordValidationErrors,
+  isValidUsername,
+} from "../../../shared/utils/passwordValidation.ts";
 
 const CreateAccount = () => {
+  const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<UserType>("CLIENT");
   const [inputError, setInputError] = useState<string[] | null>(null);
   const { createAccount } = useAuth();
@@ -24,7 +30,6 @@ const CreateAccount = () => {
   ): Promise<void> => {
     event.preventDefault();
     const errors: string[] = [];
-    const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/;
     const formData = new FormData(event.currentTarget);
     const username: string = formData.get("username") as string;
     const password: string = formData.get("password") as string;
@@ -42,21 +47,10 @@ const CreateAccount = () => {
       return setInputError(errors);
     }
 
-    // PASSWORD must have at least 6 characters, one uppercase,
-    // one lowercase, one special character and one number
-    if (password.length < 6)
-      errors.push("Password must be at least 6 characters");
-    if (!/[a-z]/.test(password))
-      errors.push("Password must have at least one lowercase letter");
-    if (!/[A-Z]/.test(password))
-      errors.push("Password must have at least one uppercase letter");
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password))
-      errors.push("Password must have at least one special character");
-    if (!/[0-9]/.test(password))
-      errors.push("Password must have at least one number");
+    errors.push(...getPasswordValidationErrors(password));
 
     // USERNAME can only contain letters, numbers, underscores and hyphens
-    if (!USERNAME_REGEX.test(username)) {
+    if (!isValidUsername(username)) {
       errors.push(
         "Username can only contain letters, numbers, underscores, and hyphens",
       );
@@ -79,6 +73,7 @@ const CreateAccount = () => {
       setSelectedType("CLIENT");
       form.reset();
       setSuccess(true);
+      navigate("/manage-users");
     } catch (err) {
       setInputError([
         err instanceof Error ? err.message : "Failed to create account",
@@ -96,12 +91,12 @@ const CreateAccount = () => {
         />
       )}
 
-      <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="relative flex min-h-screen items-center justify-center p-4">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md mx-4 md:p-6 p-4 text-left text-sm rounded-xl shadow-[0px_0px_10px_0px] shadow-black/10 dark:shadow-black/30"
+          className="mx-4 w-full max-w-md min-w-80 rounded-xl p-4 text-left text-sm shadow-[0px_0px_10px_0px] shadow-black/10 dark:shadow-black/30 md:p-6"
         >
-          <h2 className="text-2xl font-semibold mb-6 text-center">
+          <h2 className="mb-6 text-center text-2xl font-semibold">
             Create Account
           </h2>
 
@@ -113,7 +108,7 @@ const CreateAccount = () => {
             name="username"
             className="w-full border mb-4 outline-none rounded-full py-2.5 px-4"
             type="text"
-            placeholder="Enter your username"
+            placeholder="Enter the username"
             required
           />
 
@@ -163,7 +158,7 @@ const CreateAccount = () => {
             name="confirmPassword"
             className="w-full border outline-none rounded-full py-2.5 px-4"
             type="password"
-            placeholder="Confirm your password"
+            placeholder="Confirm the password"
             required
           />
 
@@ -175,12 +170,21 @@ const CreateAccount = () => {
             </div>
           )}
 
-          <button
-            type="submit"
-            className="w-full mt-10 mb-4 bg-brand hover:opacity-90 active:scale-95 transition py-2.5 rounded-full text-white"
-          >
-            Create Account
-          </button>
+          <div className="mt-10 flex flex-col gap-3 bg-form-bg pt-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={() => navigate("/manage-users")}
+              className="w-full rounded-full border border-ui-border bg-(--input-bg) px-5 py-2.5 text-sm font-medium text-main-text transition hover:border-brand hover:text-brand"
+            >
+              Go Back
+            </button>
+            <button
+              type="submit"
+              className="w-full rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90 active:scale-95"
+            >
+              Create Account
+            </button>
+          </div>
         </form>
       </div>
     </>

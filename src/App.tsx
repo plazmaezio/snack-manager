@@ -8,6 +8,7 @@ import CartPreview from "./features/cart/pages/CartPreview";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NotFound from "./features/errors/pages/NotFound";
 import ManageInventory from "./features/inventory/pages/ManageInventory";
+import ManageUsers from "./features/users/pages/ManageUsers";
 import NavBar from "./features/layout/components/NavBar";
 import ProtectedRoute from "./features/auth/components/ProtectedRoute";
 import RoleRoute from "./features/auth/components/RoleRoute";
@@ -29,7 +30,7 @@ const App = () => {
             <Route path="/menu/:dishId" element={<DishDetail />} />
             <Route path="/cart" element={<CartPreview />} />
             <Route
-              path="/create-account"
+              path="/manage-users/create-account"
               element={
                 <RoleRoute allowedRoles={["ADMIN"]}>
                   <CreateAccount />
@@ -41,6 +42,14 @@ const App = () => {
               element={
                 <RoleRoute allowedRoles={["ADMIN", "EMPLOYEE"]}>
                   <ManageInventory />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/manage-users"
+              element={
+                <RoleRoute allowedRoles={["ADMIN"]}>
+                  <ManageUsers />
                 </RoleRoute>
               }
             />
