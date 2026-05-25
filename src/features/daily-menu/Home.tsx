@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import WeeklyMenu from "./components/WeeklyMenu";
-import { Link } from "react-router-dom";
 
 const Home = () => {
   useEffect(() => {
@@ -19,16 +18,6 @@ const Home = () => {
         </div>
 
         <hr className="mb-6" />
-
-        {/* Menu section */}
-        <div className="text-center mb-4">
-          <Link
-            to="/menu"
-            className="inline-block text-brand underline hover:opacity-80 transition-opacity text-sm sm:text-base"
-          >
-            ▶ Click here to see the whole menu ◀
-          </Link>
-        </div>
 
         <WeeklyMenu />
       </main>

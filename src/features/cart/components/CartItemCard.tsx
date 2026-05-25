@@ -15,7 +15,7 @@ import {
   getItemPrice,
   getMenuDishNames,
   getMenuDishIds,
-} from "../types/cart.helpers";
+} from "../types/";
 import AllergenBadges from "./AllergenBadges";
 import IngredientList from "./IngredientList";
 import type { DishResponse, IngredientResponse } from "../../inventory/types";
