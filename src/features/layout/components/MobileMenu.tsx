@@ -93,7 +93,7 @@ const MobileMenu = ({
             {(user.type === "ADMIN" || user.type === "EMPLOYEE") && (
               <button
                 onClick={() => {
-                  handleNavigation("manage-inventory");
+                  handleNavigation("/manage-inventory");
                 }}
                 className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2"
               >
@@ -114,7 +114,10 @@ const MobileMenu = ({
                   <Pencil className="w-4 h-4" />
                   Edit Profile
                 </button>
-                <button className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2">
+                <button
+                  onClick={() => handleNavigation("/my-purchases")}
+                  className="w-full text-left px-4 py-2 hover:bg-brand-bg rounded-md transition-colors flex items-center gap-2"
+                >
                   <ShoppingCart className="w-4 h-4" />
                   Purchases
                 </button>
