@@ -5,6 +5,7 @@ export interface CartDishItem {
   type: "dish";
   dish: DishResponse;
   quantity: number;
+  date: string;
 }
 
 export interface CartMenuItem {

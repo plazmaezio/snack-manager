@@ -5,8 +5,8 @@ import type { DailyMenuResponse } from "../../daily-menu/types";
 
 interface CartContextType {
   cartItems: CartItem[];
-  addDish: (dish: DishResponse) => void;
-  addMenu: (menu: DailyMenuResponse, price: number) => void;
+  addDish: (dish: DishResponse, date: string) => void;
+  addMenu: (menu: DailyMenuResponse, price: number, date: string) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   cartTotal: number;
@@ -29,7 +29,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addDish = (dish: DishResponse) => {
+  const addDish = (dish: DishResponse, date: string) => {
     setCartItems((prev) => {
       const existing = prev.find(
         (item) => item.type === "dish" && item.dish.id === dish.id,
@@ -42,11 +42,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
             : item,
         );
       }
-      return [...prev, { type: "dish", dish, quantity: 1 }];
+      return [...prev, { type: "dish", dish, quantity: 1, date }];
     });
   };
 
-  const addMenu = (menu: DailyMenuResponse, price: number) => {
+  const addMenu = (menu: DailyMenuResponse, price: number, date: string) => {
     setCartItems((prev) => {
       const existing = prev.find(
         (item) => item.type === "menu" && item.menu.id === menu.id,
@@ -59,7 +59,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
             : item,
         );
       }
-      return [...prev, { type: "menu", menu, price, quantity: 1 }];
+      return [...prev, { type: "menu", menu, price, quantity: 1, date }];
     });
   };
 
