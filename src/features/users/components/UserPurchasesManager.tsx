@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../auth/contexts/AuthContext";
 import CentralizedList from "../../../shared/components/CentralizedList";
 import { fetchUserByIdService } from "../services/userService";
 import {
@@ -7,6 +8,7 @@ import {
   getPurchases,
   getPurchasesByDate,
   getPurchasesByClientId,
+  getPurchasesByClientIdForClient,
 } from "../../cart/services/purchaseService";
 import type { PurchaseResponse } from "../../cart/types/purchase.types";
 
@@ -24,6 +26,8 @@ const formatPurchaseDate = (value: string) => {
 
 const UserPurchasesManager = () => {
   const { clientId } = useParams();
+  const { user } = useAuth();
+  const canDeletePurchases = user?.type === "ADMIN";
   const [purchases, setPurchases] = useState<PurchaseResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,33 +36,47 @@ const UserPurchasesManager = () => {
 
   useEffect(() => {
     const loadClientUsername = async () => {
+      // If current user is CLIENT, show their username only
+      if (user?.type === "CLIENT") {
+        setClientUsername(user.username);
+        return;
+      }
+
       if (!clientId) {
         setClientUsername("");
         return;
       }
 
       try {
-        const user = await fetchUserByIdService(clientId);
-        setClientUsername(user.username);
+        const usr = await fetchUserByIdService(clientId);
+        setClientUsername(usr.username);
       } catch {
         setClientUsername(clientId);
       }
     };
 
     loadClientUsername();
-  }, [clientId]);
+  }, [clientId, user]);
 
   useEffect(() => {
     const loadPurchases = async () => {
       setLoading(true);
 
       try {
-        const data = selectedDate
-          ? await getPurchasesByDate(selectedDate)
-          : clientId
+        // if current user is a client, always fetch only their purchases
+        if (user?.type === "CLIENT") {
+          const clientData = selectedDate
+            ? await getPurchasesByClientIdForClient(user.id)
+            : await getPurchasesByClientIdForClient(user.id);
+          setPurchases(clientData);
+        } else {
+          const data = selectedDate
+            ? await getPurchasesByDate(selectedDate)
+            : clientId
             ? await getPurchasesByClientId(clientId)
             : await getPurchases();
-        setPurchases(data);
+          setPurchases(data);
+        }
         setError(null);
       } catch {
         setError(
@@ -147,10 +165,14 @@ const UserPurchasesManager = () => {
         fieldFormatters={{
           date: (value) => formatPurchaseDate(String(value ?? "")),
         }}
-        onDelete={async (ids) => {
-          await Promise.all(ids.map((id) => deletePurchase(id)));
-          setPurchases((current) => current.filter((item) => !ids.includes(item.id)));
-        }}
+        onDelete={
+          canDeletePurchases
+            ? async (ids: string[]) => {
+                await Promise.all(ids.map((id) => deletePurchase(id)));
+                setPurchases((current) => current.filter((item) => !ids.includes(item.id)));
+              }
+            : undefined
+        }
       />
     </div>
   );

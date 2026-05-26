@@ -59,6 +59,18 @@ const getPurchasesByClientId = async (
   }
 };
 
+const getPurchasesByClientIdForClient = async (
+  clientId: string,
+): Promise<PurchaseResponse[]> => {
+  try {
+    return await api.get<PurchaseResponse[]>(`/purchases/client/${clientId}`);
+  } catch (err) {
+    throw new Error(
+      err instanceof Error ? err.message : "Failed to fetch client purchases",
+    );
+  }
+};
+
 const getPurchasesByDate = async (date: string): Promise<PurchaseResponse[]> => {
   try {
     return await api.get<PurchaseResponse[]>(`/purchases/date/${date}`);
@@ -93,6 +105,7 @@ export {
   createPurchase,
   getPurchases,
   getPurchasesByClientId,
+  getPurchasesByClientIdForClient,
   getPurchasesByDate,
   getPurchaseById,
   deletePurchase,

@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NotFound from "./features/errors/pages/NotFound";
 import ManageInventory from "./features/inventory/pages/ManageInventory";
 import ManageUsers from "./features/users/pages/ManageUsers";
+import MyPurchases from "./features/users/pages/MyPurchases";
 import NavBar from "./features/layout/components/NavBar";
 import ProtectedRoute from "./features/auth/components/ProtectedRoute";
 import RoleRoute from "./features/auth/components/RoleRoute";
@@ -44,6 +45,7 @@ const App = () => {
                 </RoleRoute>
               }
             />
+            
             <Route
               path="/manage-users"
               element={
@@ -81,6 +83,14 @@ const App = () => {
               element={
                 <RoleRoute allowedRoles={["CLIENT"]}>
                   <EditProfile />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/my-purchases"
+              element={
+                <RoleRoute allowedRoles={["CLIENT"]}>
+                  <MyPurchases />
                 </RoleRoute>
               }
             />
