@@ -2,8 +2,8 @@ import { Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { getItemKey, getItemName, getItemPrice } from "../types/cart.helpers";
 import { useAuth } from "../../auth/contexts/AuthContext";
+import { useCart } from "../contexts/CartContext";
 import { createPurchase } from "../services/purchaseService";
-import type { UserResponse } from "../../auth/types";
 import type { PurchaseRequest } from "../types/purchase.types";
 import type { CartItem } from "../types";
 
@@ -13,66 +13,61 @@ interface CartOrderSummaryProps {
   isUpdating: boolean;
 }
 
-const clearCart = () => {
-  localStorage.removeItem("cart");
-};
-
-const handleCheckout = async (
-  cartItems: CartItem[],
-  cartTotal: number,
-  user: UserResponse | null,
-) => {
-  const navigate = useNavigate();
-
-  if (user === null) {
-    return;
-  }
-
-  if (user.balance === undefined) {
-    alert("User balance is unavailable. Please try again later.");
-    return;
-  }
-
-  if (cartTotal > user.balance) {
-    alert("Insufficient balance. Please add funds to your account.");
-    return;
-  }
-
-  try {
-    const purchaseRequests: PurchaseRequest[] = cartItems.flatMap((item) => {
-      const requestsForThisItem: PurchaseRequest[] = [];
-
-      for (let quantity = 0; quantity < item.quantity; quantity++) {
-        requestsForThisItem.push({
-          clientUsername: user.username,
-          dishName: getItemName(item),
-          date: new Date().toISOString(),
-        });
-      }
-
-      return requestsForThisItem;
-    });
-
-    await createPurchase(purchaseRequests);
-
-    alert("Purchase successful! Thank you for your order.");
-    clearCart();
-    navigate("/purchases");
-  } catch (err) {
-    alert(
-      err instanceof Error
-        ? `Purchase failed: ${err.message}`
-        : "Purchase failed. Please try again.",
-    );
-  }
-};
-
 const CartOrderSummary = ({
   cartItems,
   cartTotal,
   isUpdating,
 }: CartOrderSummaryProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { removeItem } = useCart();
+
+  const clearCart = () => {
+    localStorage.removeItem("cart");
+    cartItems.forEach((item) =>
+      removeItem(item.type === "dish" ? item.dish.id : item.menu.id),
+    );
+  };
+
+  const handleCheckout = async () => {
+    if (user === null) return;
+
+    if (user.balance === undefined) {
+      alert("User balance is unavailable. Please try again later.");
+      return;
+    }
+
+    if (cartTotal > user.balance) {
+      alert("Insufficient balance. Please add funds to your account.");
+      return;
+    }
+
+    try {
+      const purchaseRequests: PurchaseRequest[] = cartItems.flatMap((item) => {
+        const requests: PurchaseRequest[] = [];
+        for (let i = 0; i < item.quantity; i++) {
+          requests.push({
+            clientUsername: user.username,
+            dishName: getItemName(item),
+            date: new Date().toISOString().split("T")[0],
+          });
+        }
+        return requests;
+      });
+
+      await createPurchase(purchaseRequests);
+
+      alert("Purchase successful! Thank you for your order.");
+      clearCart();
+      navigate("/purchases");
+    } catch (err) {
+      alert(
+        err instanceof Error
+          ? `Purchase failed: ${err.message}`
+          : "Purchase failed. Please try again.",
+      );
+    }
+  };
 
   return (
     <div className="bg-main-bg border border-ui-border rounded-lg p-6 sticky top-20">
@@ -124,8 +119,8 @@ const CartOrderSummary = ({
       </div>
 
       <button
-        onClick={() => handleCheckout(cartItems, cartTotal, user)}
-        className="w-full px-4 py-3 bg-brand text-white font-semibold rounded-md hover:opacity-90 transition-opacity mb-3"
+        onClick={handleCheckout}
+        className="w-full px-4 py-3 bg-brand text-white font-semibold rounded-md hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 mb-3"
       >
         Buy Now
       </button>
