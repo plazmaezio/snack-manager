@@ -11,14 +11,7 @@ import useCartIngredients from "../hooks/useCartIngredients";
 
 const CartPreview = () => {
   const { cartItems, removeItem, updateQuantity, cartTotal } = useCart();
-  const {
-    loading,
-    dishes,
-    resolveIngredients,
-    getDishByName,
-    getMenuIngredients,
-    separateIngredientsByAllergen,
-  } = useCartIngredients();
+  const { loading, resolveIngredients } = useCartIngredients();
 
   const [localQuantities, setLocalQuantities] = useState<Map<string, number>>(
     new Map(),
@@ -95,20 +88,11 @@ const CartPreview = () => {
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item) => {
               const key = getItemKey(item);
-              const allDishes = [...dishes];
               return (
                 <CartItemCard
                   key={key}
                   item={item}
-                  dishes={allDishes}
                   resolveIngredients={resolveIngredients}
-                  getDishByName={getDishByName}
-                  separateIngredientsByAllergen={separateIngredientsByAllergen}
-                  menuIngredients={
-                    item.type === "menu"
-                      ? getMenuIngredients(item, allDishes)
-                      : []
-                  }
                   loadingIngredients={loading}
                   isUpdating={isUpdating}
                   onRemove={removeItem}

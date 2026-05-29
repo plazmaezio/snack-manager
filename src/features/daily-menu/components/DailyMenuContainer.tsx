@@ -30,6 +30,7 @@ const DailyMenuContainer = ({
   const allDishes = [...dishes];
   const getDish = (name?: string) =>
     allDishes.find((d) => d.name === name) ?? null;
+  const localFormattedDate = date.toLocaleDateString("sv-SE");
 
   useEffect(() => {
     const formatted = date.toISOString().split("T")[0];
@@ -41,8 +42,8 @@ const DailyMenuContainer = ({
       })
       .catch((error) => {
         if (error.status === 404) {
-              setMenu(null);
-            } else {
+          setMenu(null);
+        } else {
           console.error("Error fetching menu:", error);
         }
       });
@@ -76,7 +77,10 @@ const DailyMenuContainer = ({
         <div className="space-y-2">
           {meatDish && (
             <div className="flex items-center justify-between">
-              <Link to={`/menu/${meatDish.id}`} className="block hover:underline flex-1">
+              <Link
+                to={`/menu/${meatDish.id}`}
+                className="block hover:underline flex-1"
+              >
                 <DailyMenuDish dish={meatDish} />
               </Link>
               {isToday && (
@@ -84,13 +88,23 @@ const DailyMenuContainer = ({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    addDish(meatDish);
+                    addDish(meatDish, localFormattedDate);
                   }}
                   aria-label={`Add ${meatDish.name} to cart`}
                   className="ml-2 p-2 rounded hover:bg-gray-100"
                 >
-                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+                  <svg
+                    className="w-5 h-5 text-accent"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4"
+                    />
                     <circle cx="7" cy="19" r="2" />
                     <circle cx="17" cy="19" r="2" />
                   </svg>
@@ -100,7 +114,10 @@ const DailyMenuContainer = ({
           )}
           {fishDish && (
             <div className="flex items-center justify-between">
-              <Link to={`/menu/${fishDish.id}`} className="block hover:underline flex-1">
+              <Link
+                to={`/menu/${fishDish.id}`}
+                className="block hover:underline flex-1"
+              >
                 <DailyMenuDish dish={fishDish} />
               </Link>
               {isToday && (
@@ -108,13 +125,23 @@ const DailyMenuContainer = ({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    addDish(fishDish);
+                    addDish(fishDish, localFormattedDate);
                   }}
                   aria-label={`Add ${fishDish.name} to cart`}
                   className="ml-2 p-2 rounded hover:bg-gray-100"
                 >
-                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+                  <svg
+                    className="w-5 h-5 text-accent"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4"
+                    />
                     <circle cx="7" cy="19" r="2" />
                     <circle cx="17" cy="19" r="2" />
                   </svg>
@@ -124,7 +151,10 @@ const DailyMenuContainer = ({
           )}
           {vegetarianDish && (
             <div className="flex items-center justify-between">
-              <Link to={`/menu/${vegetarianDish.id}`} className="block hover:underline flex-1">
+              <Link
+                to={`/menu/${vegetarianDish.id}`}
+                className="block hover:underline flex-1"
+              >
                 <DailyMenuDish dish={vegetarianDish} />
               </Link>
               {isToday && (
@@ -132,13 +162,23 @@ const DailyMenuContainer = ({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    addDish(vegetarianDish);
+                    addDish(vegetarianDish, localFormattedDate);
                   }}
                   aria-label={`Add ${vegetarianDish.name} to cart`}
                   className="ml-2 p-2 rounded hover:bg-gray-100"
                 >
-                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+                  <svg
+                    className="w-5 h-5 text-accent"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4"
+                    />
                     <circle cx="7" cy="19" r="2" />
                     <circle cx="17" cy="19" r="2" />
                   </svg>

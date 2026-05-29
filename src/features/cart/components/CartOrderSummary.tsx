@@ -24,9 +24,7 @@ const CartOrderSummary = ({
 
   const clearCart = () => {
     localStorage.removeItem("cart");
-    cartItems.forEach((item) =>
-      removeItem(item.type === "dish" ? item.dish.id : item.menu.id),
-    );
+    cartItems.forEach((item) => removeItem(item.dish.id));
   };
 
   const handleCheckout = async () => {
@@ -49,7 +47,7 @@ const CartOrderSummary = ({
           requests.push({
             clientUsername: user.username,
             dishName: getItemName(item),
-            date: new Date().toISOString().split("T")[0],
+            date: item.date,
           });
         }
         return requests;

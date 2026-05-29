@@ -8,16 +8,11 @@ interface CartDropdownProps {
   totalQuantity: number;
 }
 
-const getItemKey = (item: CartItem) =>
-  item.type === "dish" ? item.dish.id : item.menu.id;
+const getItemKey = (item: CartItem) => item.dish.id;
 
-const getItemName = (item: CartItem) =>
-  item.type === "dish" ? item.dish.name : `Daily Menu`;
+const getItemName = (item: CartItem) => item.dish.name;
 
-const getItemPrice = (item: CartItem) =>
-  item.type === "dish"
-    ? item.dish.price * item.quantity
-    : item.price * item.quantity;
+const getItemPrice = (item: CartItem) => item.dish.price * item.quantity;
 
 const CartDropdown = ({
   cartItems,

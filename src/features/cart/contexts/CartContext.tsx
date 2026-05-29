@@ -1,12 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { CartDishItem, CartItem, CartMenuItem } from "../types";
+import type { CartItem } from "../types";
 import type { DishResponse } from "../../inventory/types";
-import type { DailyMenuResponse } from "../../daily-menu/types";
 
 interface CartContextType {
   cartItems: CartItem[];
   addDish: (dish: DishResponse, date: string) => void;
-  addMenu: (menu: DailyMenuResponse, price: number, date: string) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   cartTotal: number;
@@ -31,44 +29,22 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addDish = (dish: DishResponse, date: string) => {
     setCartItems((prev) => {
-      const existing = prev.find(
-        (item) => item.type === "dish" && item.dish.id === dish.id,
-      ) as CartDishItem | undefined;
+      const existing = prev.find((item) => item.dish.id === dish.id);
 
       if (existing) {
         return prev.map((item) =>
-          item.type === "dish" && item.dish.id === dish.id
+          item.dish.id === dish.id
             ? { ...item, quantity: item.quantity + 1 }
             : item,
         );
       }
-      return [...prev, { type: "dish", dish, quantity: 1, date }];
-    });
-  };
 
-  const addMenu = (menu: DailyMenuResponse, price: number, date: string) => {
-    setCartItems((prev) => {
-      const existing = prev.find(
-        (item) => item.type === "menu" && item.menu.id === menu.id,
-      ) as CartMenuItem | undefined;
-
-      if (existing) {
-        return prev.map((item) =>
-          item.type === "menu" && item.menu.id === menu.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      }
-      return [...prev, { type: "menu", menu, price, quantity: 1, date }];
+      return [...prev, { dish, quantity: 1, date }];
     });
   };
 
   const removeItem = (id: string) => {
-    setCartItems((prev) =>
-      prev.filter((item) =>
-        item.type === "dish" ? item.dish.id !== id : item.menu.id !== id,
-      ),
-    );
+    setCartItems((prev) => prev.filter((item) => item.dish.id !== id));
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -76,23 +52,16 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       removeItem(id);
       return;
     }
+
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.type === "dish"
-          ? item.dish.id === id
-            ? { ...item, quantity }
-            : item
-          : item.menu.id === id
-            ? { ...item, quantity }
-            : item,
-      ),
+      prev.map((item) => (item.dish.id === id ? { ...item, quantity } : item)),
     );
   };
 
-  const cartTotal = cartItems.reduce((sum, item) => {
-    const price = item.type === "dish" ? item.dish.price : item.price;
-    return sum + price * item.quantity;
-  }, 0);
+  const cartTotal = cartItems.reduce(
+    (sum, item) => sum + item.dish.price * item.quantity,
+    0,
+  );
 
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -101,7 +70,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         cartItems,
         addDish,
-        addMenu,
         removeItem,
         updateQuantity,
         cartTotal,
