@@ -63,12 +63,19 @@ const UserPurchasesManager = () => {
       setLoading(true);
 
       try {
-        // if current user is a client, always fetch only their purchases
         if (user?.type === "CLIENT") {
-          const clientData = selectedDate
-            ? await getPurchasesByClientIdForClient(user.id)
-            : await getPurchasesByClientIdForClient(user.id);
-          setPurchases(clientData);
+          const clientData = await getPurchasesByClientIdForClient(user.id);
+          const filteredPurchases = selectedDate
+            ? clientData.filter((purchase) => {
+                const purchaseDate = new Date(purchase.date);
+                return (
+                  !Number.isNaN(purchaseDate.getTime()) &&
+                  purchaseDate.toISOString().split("T")[0] === selectedDate
+                );
+              })
+            : clientData;
+
+          setPurchases(filteredPurchases);
         } else {
           const data = selectedDate
             ? await getPurchasesByDate(selectedDate)
@@ -92,7 +99,7 @@ const UserPurchasesManager = () => {
     };
 
     loadPurchases();
-  }, [clientId, selectedDate]);
+  }, [clientId, selectedDate, user]);
 
   const handleDateChange = (value: string) => {
     setSelectedDate(value);

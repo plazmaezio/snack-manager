@@ -14,9 +14,7 @@ const WeeklyMenu = () => {
     "Sunday",
   ];
   const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
-  const tomorrow = new Date(Date.now() + 86400000).toLocaleDateString("en-US", {
-    weekday: "long",
-  });
+
   const todayIndex = DAYS.indexOf(today);
   const [dishes, setDishes] = useState<DishResponse[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -132,7 +130,7 @@ const WeeklyMenu = () => {
                     day={day}
                     date={date}
                     isPast={index < todayIndex}
-                    isToday={day === today || day === tomorrow}
+                    isToday={day === today}
                     dishes={dishes}
                   />
                 </div>

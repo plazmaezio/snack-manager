@@ -52,12 +52,14 @@ const DailyMenuContainer = ({
   const meatDish = getDish(menu?.meatDishName);
   const fishDish = getDish(menu?.fishDishName);
   const vegetarianDish = getDish(menu?.vegetarianDishName);
+  // enable adds only for future days (days after today)
+  const canAddDish = !isPast && !isToday;
 
   // whole-menu add and menu total removed — per-dish adds are available
 
   return (
     <div
-      className={`${isPast ? "opacity-50" : ""} pl-3`}
+      className={`${canAddDish ? "" : "opacity-50"} pl-3`}
       style={{ borderLeft: `4px solid var(--color-brand, #3b82f6)` }}
     >
       <h4
@@ -77,13 +79,17 @@ const DailyMenuContainer = ({
         <div className="space-y-2">
           {meatDish && (
             <div className="flex items-center justify-between">
-              <Link
-                to={`/menu/${meatDish.id}`}
-                className="block hover:underline flex-1"
-              >
+              {canAddDish ? (
+                <Link
+                  to={`/menu/${meatDish.id}`}
+                  className="block hover:underline flex-1"
+                >
+                  <DailyMenuDish dish={meatDish} />
+                </Link>
+              ) : (
                 <DailyMenuDish dish={meatDish} />
-              </Link>
-              {isToday && (
+              )}
+              {canAddDish && (
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -114,13 +120,17 @@ const DailyMenuContainer = ({
           )}
           {fishDish && (
             <div className="flex items-center justify-between">
-              <Link
-                to={`/menu/${fishDish.id}`}
-                className="block hover:underline flex-1"
-              >
+              {canAddDish ? (
+                <Link
+                  to={`/menu/${fishDish.id}`}
+                  className="block hover:underline flex-1"
+                >
+                  <DailyMenuDish dish={fishDish} />
+                </Link>
+              ) : (
                 <DailyMenuDish dish={fishDish} />
-              </Link>
-              {isToday && (
+              )}
+              {canAddDish && (
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -151,13 +161,17 @@ const DailyMenuContainer = ({
           )}
           {vegetarianDish && (
             <div className="flex items-center justify-between">
-              <Link
-                to={`/menu/${vegetarianDish.id}`}
-                className="block hover:underline flex-1"
-              >
+              {canAddDish ? (
+                <Link
+                  to={`/menu/${vegetarianDish.id}`}
+                  className="block hover:underline flex-1"
+                >
+                  <DailyMenuDish dish={vegetarianDish} />
+                </Link>
+              ) : (
                 <DailyMenuDish dish={vegetarianDish} />
-              </Link>
-              {isToday && (
+              )}
+              {canAddDish && (
                 <button
                   onClick={(e) => {
                     e.preventDefault();

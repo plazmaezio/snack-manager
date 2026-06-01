@@ -57,7 +57,7 @@ const CartOrderSummary = ({
 
       alert("Purchase successful! Thank you for your order.");
       clearCart();
-      navigate("/purchases");
+      navigate("/my-purchases");
     } catch (err) {
       alert(
         err instanceof Error
