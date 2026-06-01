@@ -84,7 +84,7 @@ const DishDetail = () => {
   // replace handleAddToCart with:
   const handleAddToCart = () => {
     if (!dish) return;
-    addDish(dish);
+    addDish(dish, new Date().toISOString().split("T")[0]);
   };
 
   if (loading) {

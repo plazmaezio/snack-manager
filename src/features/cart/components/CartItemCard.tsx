@@ -9,27 +9,14 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { CartItem } from "../types/cart.types";
-import {
-  getItemKey,
-  getItemName,
-  getItemPrice,
-  getMenuDishNames,
-  getMenuDishIds,
-} from "../types/";
+import { getItemKey, getItemName, getItemPrice } from "../types/";
 import AllergenBadges from "./AllergenBadges";
 import IngredientList from "./IngredientList";
-import type { DishResponse, IngredientResponse } from "../../inventory/types";
+import type { IngredientResponse } from "../../inventory/types";
 
 interface CartItemCardProps {
   item: CartItem;
-  dishes: DishResponse[];
   resolveIngredients: (names: string[]) => IngredientResponse[];
-  getDishByName: (name: string) => DishResponse | undefined;
-  separateIngredientsByAllergen: (ingredients: IngredientResponse[]) => {
-    withAllergens: IngredientResponse[];
-    withoutAllergens: IngredientResponse[];
-  };
-  menuIngredients: IngredientResponse[];
   loadingIngredients: boolean;
   isUpdating: boolean;
   onRemove: (id: string) => void;
@@ -39,10 +26,7 @@ interface CartItemCardProps {
 
 const CartItemCard = ({
   item,
-  dishes,
   resolveIngredients,
-  separateIngredientsByAllergen,
-  menuIngredients,
   loadingIngredients,
   isUpdating,
   onRemove,
@@ -52,9 +36,7 @@ const CartItemCard = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const key = getItemKey(item);
-  const menuDishNames = getMenuDishNames(item);
-  const resolvedIngredients =
-    item.type === "dish" ? resolveIngredients(item.dish.ingredientNames) : [];
+  const resolvedIngredients = resolveIngredients(item.dish.ingredientNames);
 
   return (
     <div className="bg-main-bg border border-ui-border rounded-lg overflow-hidden hover:border-brand transition-colors">
@@ -74,41 +56,16 @@ const CartItemCard = ({
 
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold">
-            {item.type === "dish" ? (
-              <Link
-                to={`/menu/${item.dish.id}`}
-                className="hover:underline transition-colors"
-              >
-                {getItemName(item)}
-              </Link>
-            ) : (
-              getItemName(item)
-            )}
+            <Link
+              to={`/menu/${item.dish.id}`}
+              className="hover:underline transition-colors"
+            >
+              {getItemName(item)}
+            </Link>
           </h3>
 
-          {item.type === "dish" && !loadingIngredients && (
+          {!loadingIngredients && (
             <AllergenBadges ingredients={resolvedIngredients} />
-          )}
-
-          {item.type === "menu" && (
-            <div>
-              <p className="text-xs text-main-text mt-1 opacity-70 mb-1">
-                {getMenuDishIds(item, dishes).map(({ name, id }, idx, arr) => (
-                  <span key={id}>
-                    <Link
-                      to={`/menu/${id}`}
-                      className="hover:underline transition-colors"
-                    >
-                      {name}
-                    </Link>
-                    {idx < arr.length - 1 && " · "}
-                  </span>
-                ))}
-              </p>
-              {!loadingIngredients && (
-                <AllergenBadges ingredients={menuIngredients} />
-              )}
-            </div>
           )}
 
           <p className="text-lg font-bold text-brand mt-2">
@@ -149,76 +106,18 @@ const CartItemCard = ({
       {/* Expanded details */}
       {isExpanded && (
         <div className="px-4 pb-4 ml-9 space-y-3 border-t border-ui-border pt-3">
-          {item.type === "dish" && (
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-brand opacity-80">
-                Ingredients
-              </p>
-              {loadingIngredients ? (
-                <div className="flex items-center gap-2 text-xs opacity-50">
-                  <Loader className="w-3 h-3 animate-spin" /> Loading...
-                </div>
-              ) : (
-                <IngredientList ingredients={resolvedIngredients} />
-              )}
-            </div>
-          )}
-
-          {item.type === "menu" && (
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-brand opacity-80">
-                Includes
-              </p>
-              <ul className="space-y-3">
-                {menuDishNames.map((dishName) => {
-                  const dish = dishes.find(
-                    (d) => d.name.toLowerCase() === dishName.toLowerCase(),
-                  );
-                  const dishIngredients = dish
-                    ? resolveIngredients(dish.ingredientNames)
-                    : [];
-                  const { withAllergens, withoutAllergens } =
-                    separateIngredientsByAllergen(dishIngredients);
-
-                  return (
-                    <li
-                      key={dishName}
-                      className="space-y-1.5 border-l-2 border-brand pl-3"
-                    >
-                      {dish ? (
-                        <Link
-                          to={`/menu/${dish?.id}`}
-                          className="hover:underline transition-colors text-heading font-medium"
-                        >
-                          {dishName}
-                        </Link>
-                      ) : (
-                        <p className="text-sm font-medium text-heading">
-                          {dishName}
-                        </p>
-                      )}
-
-                      {dish &&
-                        dishIngredients.length === 0 &&
-                        !loadingIngredients && (
-                          <p className="text-xs text-main-text opacity-50">
-                            No ingredient info available
-                          </p>
-                        )}
-
-                      {withAllergens.length > 0 && (
-                        <IngredientList ingredients={withAllergens} />
-                      )}
-
-                      {withoutAllergens.length > 0 && (
-                        <IngredientList ingredients={withoutAllergens} />
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-brand opacity-80">
+              Ingredients
+            </p>
+            {loadingIngredients ? (
+              <div className="flex items-center gap-2 text-xs opacity-50">
+                <Loader className="w-3 h-3 animate-spin" /> Loading...
+              </div>
+            ) : (
+              <IngredientList ingredients={resolvedIngredients} />
+            )}
+          </div>
         </div>
       )}
 

@@ -14,6 +14,7 @@ const WeeklyMenu = () => {
     "Sunday",
   ];
   const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+
   const todayIndex = DAYS.indexOf(today);
   const [dishes, setDishes] = useState<DishResponse[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);

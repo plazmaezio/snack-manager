@@ -30,6 +30,7 @@ const DailyMenuContainer = ({
   const allDishes = [...dishes];
   const getDish = (name?: string) =>
     allDishes.find((d) => d.name === name) ?? null;
+  const localFormattedDate = date.toLocaleDateString("sv-SE");
 
   useEffect(() => {
     const formatted = date.toISOString().split("T")[0];
@@ -41,8 +42,8 @@ const DailyMenuContainer = ({
       })
       .catch((error) => {
         if (error.status === 404) {
-              setMenu(null);
-            } else {
+          setMenu(null);
+        } else {
           console.error("Error fetching menu:", error);
         }
       });
@@ -51,12 +52,14 @@ const DailyMenuContainer = ({
   const meatDish = getDish(menu?.meatDishName);
   const fishDish = getDish(menu?.fishDishName);
   const vegetarianDish = getDish(menu?.vegetarianDishName);
+  // enable adds only for future days (days after today)
+  const canAddDish = !isPast && !isToday;
 
   // whole-menu add and menu total removed — per-dish adds are available
 
   return (
     <div
-      className={`${isPast ? "opacity-50" : ""} pl-3`}
+      className={`${canAddDish ? "" : "opacity-50"} pl-3`}
       style={{ borderLeft: `4px solid var(--color-brand, #3b82f6)` }}
     >
       <h4
@@ -76,21 +79,38 @@ const DailyMenuContainer = ({
         <div className="space-y-2">
           {meatDish && (
             <div className="flex items-center justify-between">
-              <Link to={`/menu/${meatDish.id}`} className="block hover:underline flex-1">
+              {canAddDish ? (
+                <Link
+                  to={`/menu/${meatDish.id}`}
+                  className="block hover:underline flex-1"
+                >
+                  <DailyMenuDish dish={meatDish} />
+                </Link>
+              ) : (
                 <DailyMenuDish dish={meatDish} />
-              </Link>
-              {isToday && (
+              )}
+              {canAddDish && (
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    addDish(meatDish);
+                    addDish(meatDish, localFormattedDate);
                   }}
                   aria-label={`Add ${meatDish.name} to cart`}
                   className="ml-2 p-2 rounded hover:bg-gray-100"
                 >
-                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+                  <svg
+                    className="w-5 h-5 text-accent"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4"
+                    />
                     <circle cx="7" cy="19" r="2" />
                     <circle cx="17" cy="19" r="2" />
                   </svg>
@@ -100,21 +120,38 @@ const DailyMenuContainer = ({
           )}
           {fishDish && (
             <div className="flex items-center justify-between">
-              <Link to={`/menu/${fishDish.id}`} className="block hover:underline flex-1">
+              {canAddDish ? (
+                <Link
+                  to={`/menu/${fishDish.id}`}
+                  className="block hover:underline flex-1"
+                >
+                  <DailyMenuDish dish={fishDish} />
+                </Link>
+              ) : (
                 <DailyMenuDish dish={fishDish} />
-              </Link>
-              {isToday && (
+              )}
+              {canAddDish && (
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    addDish(fishDish);
+                    addDish(fishDish, localFormattedDate);
                   }}
                   aria-label={`Add ${fishDish.name} to cart`}
                   className="ml-2 p-2 rounded hover:bg-gray-100"
                 >
-                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+                  <svg
+                    className="w-5 h-5 text-accent"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4"
+                    />
                     <circle cx="7" cy="19" r="2" />
                     <circle cx="17" cy="19" r="2" />
                   </svg>
@@ -124,21 +161,38 @@ const DailyMenuContainer = ({
           )}
           {vegetarianDish && (
             <div className="flex items-center justify-between">
-              <Link to={`/menu/${vegetarianDish.id}`} className="block hover:underline flex-1">
+              {canAddDish ? (
+                <Link
+                  to={`/menu/${vegetarianDish.id}`}
+                  className="block hover:underline flex-1"
+                >
+                  <DailyMenuDish dish={vegetarianDish} />
+                </Link>
+              ) : (
                 <DailyMenuDish dish={vegetarianDish} />
-              </Link>
-              {isToday && (
+              )}
+              {canAddDish && (
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    addDish(vegetarianDish);
+                    addDish(vegetarianDish, localFormattedDate);
                   }}
                   aria-label={`Add ${vegetarianDish.name} to cart`}
                   className="ml-2 p-2 rounded hover:bg-gray-100"
                 >
-                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+                  <svg
+                    className="w-5 h-5 text-accent"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4"
+                    />
                     <circle cx="7" cy="19" r="2" />
                     <circle cx="17" cy="19" r="2" />
                   </svg>

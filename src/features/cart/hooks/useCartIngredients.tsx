@@ -1,21 +1,11 @@
 import { useEffect, useState } from "react";
-import type { CartItem } from "../types/cart.types";
-import { getMenuDishNames } from "../types/cart.helpers";
 import { api } from "../../../shared/services/api";
-import type { DishResponse, IngredientResponse } from "../../inventory/types";
-
-const separateIngredientsByAllergen = (ingredients: IngredientResponse[]) => ({
-  withAllergens: [...new Set(ingredients.filter((i) => i.allergen !== "NONE"))],
-  withoutAllergens: [
-    ...new Set(ingredients.filter((i) => i.allergen === "NONE")),
-  ],
-});
+import type { IngredientResponse } from "../../inventory/types";
 
 const useCartIngredients = () => {
   const [ingredientMap, setIngredientMap] = useState<
     Map<string, IngredientResponse>
   >(new Map());
-  const [dishes, setDishes] = useState<DishResponse[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -28,11 +18,6 @@ const useCartIngredients = () => {
       })
       .catch((err) => console.error("Failed to load ingredients:", err))
       .finally(() => setLoading(false));
-
-    api
-      .get<DishResponse[]>("/dishes")
-      .then(setDishes)
-      .catch((err) => console.error("Failed to load dishes:", err));
   }, []);
 
   const resolveIngredients = (names: string[]): IngredientResponse[] => {
@@ -43,33 +28,9 @@ const useCartIngredients = () => {
     return [...new Set(resolved)];
   };
 
-  const getDishByName = (name: string): DishResponse | undefined =>
-    dishes.find((d) => d.name.toLowerCase() === name.toLowerCase());
-
-  const getMenuIngredients = (
-    item: CartItem,
-    dishList: DishResponse[],
-  ): IngredientResponse[] => {
-    if (item.type !== "menu") return [];
-    const allIngredients: IngredientResponse[] = getMenuDishNames(item).flatMap(
-      (dishName) => {
-        const dish = dishList.find(
-          (d) => d.name.toLowerCase() === dishName.toLowerCase(),
-        );
-        return dish ? resolveIngredients(dish.ingredientNames) : [];
-      },
-    );
-
-    return [...new Map(allIngredients.map((i) => [i.id, i])).values()];
-  };
-
   return {
     loading,
-    dishes,
     resolveIngredients,
-    getDishByName,
-    getMenuIngredients,
-    separateIngredientsByAllergen,
   };
 };
 
